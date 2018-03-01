@@ -1,6 +1,6 @@
 Class {
 	#name : #BaselineOfRoelTyper,
-	#superclass : #Object,
+	#superclass : #BaselineOf,
 	#category : #BaselineOfRoelTyper
 }
 
