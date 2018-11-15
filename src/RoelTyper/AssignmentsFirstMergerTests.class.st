@@ -14,8 +14,8 @@ AssignmentsFirstMergerTests >> test1 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Collection)
 		assignmentTypes: (OrderedCollection with: Array).
-	self assert: mergeResult size = 1.
-	self assert: mergeResult first = Array
+	self assert: mergeResult size equals: 1.
+	self assert: mergeResult first equals: Array
 ]
 
 { #category : #'folding tests' }
@@ -28,7 +28,7 @@ AssignmentsFirstMergerTests >> test10 [
 			(OrderedCollection
 				with: Array
 				with: Collection).
-	self assert: mergeResult size = 2.
+	self assert: mergeResult size equals: 2.
 	self assert: (mergeResult includes: Array).
 	self assert: (mergeResult includes: Collection)
 ]
@@ -43,7 +43,7 @@ AssignmentsFirstMergerTests >> test11 [
 			(OrderedCollection
 				with: Collection
 				with: Array).
-	self assert: mergeResult size = 2.
+	self assert: mergeResult size equals: 2.
 	self assert: (mergeResult includes: Array).
 	self assert: (mergeResult includes: Collection)
 ]
@@ -58,7 +58,7 @@ AssignmentsFirstMergerTests >> test12 [
 			(OrderedCollection
 				with: Dictionary
 				with: Array).
-	self assert: mergeResult size = 2.
+	self assert: mergeResult size equals: 2.
 	self assert: (mergeResult includes: Dictionary).
 	self assert: (mergeResult includes: Array)
 ]
@@ -73,7 +73,7 @@ AssignmentsFirstMergerTests >> test13 [
 			(OrderedCollection
 				with: Array
 				with: Dictionary).
-	self assert: mergeResult size = 2.
+	self assert: mergeResult size equals: 2.
 	self assert: (mergeResult includes: Array).
 	self assert: (mergeResult includes: Dictionary)
 ]
@@ -86,7 +86,7 @@ AssignmentsFirstMergerTests >> test14 [
 				with: SequenceableCollection
 				with: Bag)
 		assignmentTypes: (OrderedCollection with: Array).
-	self assert: mergeResult size = 1.
+	self assert: mergeResult size equals: 1.
 	self assert: (mergeResult includes: Array)
 ]
 
@@ -95,7 +95,7 @@ AssignmentsFirstMergerTests >> test2 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Array)
 		assignmentTypes: (OrderedCollection with: Collection).
-	self assert: mergeResult size = 1.
+	self assert: mergeResult size equals: 1.
 	self assert: (mergeResult includes: Collection)
 ]
 
@@ -104,8 +104,8 @@ AssignmentsFirstMergerTests >> test3 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
 		assignmentTypes: OrderedCollection new.
-	self assert: mergeResult size = 1.
-	self assert: mergeResult first = Object
+	self assert: mergeResult size equals: 1.
+	self assert: mergeResult first equals: Object
 ]
 
 { #category : #'folding tests' }
@@ -113,8 +113,8 @@ AssignmentsFirstMergerTests >> test4 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Object)
 		assignmentTypes: OrderedCollection new.
-	self assert: mergeResult size = 1.
-	self assert: mergeResult first = Object
+	self assert: mergeResult size equals: 1.
+	self assert: mergeResult first equals: Object
 ]
 
 { #category : #'folding tests' }
@@ -122,8 +122,8 @@ AssignmentsFirstMergerTests >> test5 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
 		assignmentTypes: (OrderedCollection with: Object).
-	self assert: mergeResult size = 1.
-	self assert: mergeResult first = Object
+	self assert: mergeResult size equals: 1.
+	self assert: mergeResult first equals: Object
 ]
 
 { #category : #'folding tests' }
@@ -133,7 +133,7 @@ AssignmentsFirstMergerTests >> test6 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Dictionary)
 		assignmentTypes: (OrderedCollection with: Array).
-	self assert: mergeResult size = 2.
+	self assert: mergeResult size equals: 2.
 	self assert: (mergeResult includes: Dictionary).
 	self assert: (mergeResult includes: Array)
 ]
@@ -143,7 +143,7 @@ AssignmentsFirstMergerTests >> test7 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
 		assignmentTypes: (OrderedCollection with: Array).
-	self assert: mergeResult size = 1.
+	self assert: mergeResult size equals: 1.
 	self assert: (mergeResult includes: Array)
 ]
 
@@ -157,7 +157,7 @@ AssignmentsFirstMergerTests >> test8 [
 			(OrderedCollection
 				with: Array
 				with: Object).
-	self assert: mergeResult size = 2.
+	self assert: mergeResult size equals: 2.
 	self assert: (mergeResult includes: Array).
 	self assert: (mergeResult includes: Object)
 ]

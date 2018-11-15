@@ -6,10 +6,11 @@ Class >> nonMetaSubclassesDo: aBlock [
 
 	"This one is here for the sake of Squeak (where it is Class and not Behavior that keeps the subclasses instance variable)."
 
-	<localClassMethod> 
-   "This method is supposed to be local in Class because of a good reason.
+	"This method is supposed to be local in Class because of a good reason.
    We use this pragma to test if Class does not contain some accidental 
    local selectors."
 
-	subclasses == nil ifFalse: [subclasses do: aBlock]
+	<localClassMethod>
+	subclasses isNil
+		ifFalse: [ subclasses do: aBlock ]
 ]

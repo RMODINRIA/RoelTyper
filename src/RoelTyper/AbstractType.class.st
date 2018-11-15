@@ -4,7 +4,6 @@ Class {
 	#instVars : [
 		'ivarClass',
 		'ivarName',
-		'tag',
 		'nbOfCorrectTypes',
 		'nbOfIncorrectTypes'
 	],
@@ -23,8 +22,8 @@ AbstractType class >> forInstvar: iv inClass: aClass [
 AbstractType >> conflictingAssignmentsWith: anExtractedType [
 	| conflictingAssignments |
 	conflictingAssignments := anExtractedType assignments
-		select: [:assignment | (self types includes: assignment) not].
-	^conflictingAssignments
+		reject: [ :assignment | self types includes: assignment ].
+	^ conflictingAssignments
 ]
 
 { #category : #private }

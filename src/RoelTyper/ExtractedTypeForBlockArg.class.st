@@ -48,19 +48,25 @@ ExtractedTypeForBlockArg >> liveExtractType [
 	^lives last
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'instance creation' }
 ExtractedTypeForBlockArg >> newLive [
 	^lives addLast: (ExtractedTypeForTmp new)
 ]
 
 { #category : #printing }
 ExtractedTypeForBlockArg >> printOn: aStream [
-	aStream nextPutAll: 'Block arg'; cr;cr.
-	lives doWithIndex: [:et :index| 
-		aStream nextPutAll: 'Activation ', index printString, ': '.
-		et printOn: aStream.
-		aStream cr]
-	
+	aStream
+		nextPutAll: 'Block arg';
+		cr;
+		cr.
+	lives
+		doWithIndex: [ :et :index | 
+			aStream
+				nextPutAll: 'Activation ';
+				print: index;
+				nextPutAll: ': '.
+			et printOn: aStream.
+			aStream cr ]
 ]
 
 { #category : #accessing }

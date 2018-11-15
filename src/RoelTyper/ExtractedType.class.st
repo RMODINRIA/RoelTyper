@@ -99,7 +99,7 @@ ExtractedType >> foldInterfaceTypes: interfaceClasses withAssignmentTypes: assig
 	| tmp | 
 	assignmentClasses remove: UndefinedObject ifAbsent: [].
 	tmp:=interfaceClasses.
-	(assignmentClasses size=0 and: [
+	(assignmentClasses isEmpty and: [
 		((interface includes: #value) 
 		or: [interface includes: #value:]) and: [interfaceClasses includes: BlockClosure]]) 
 			ifTrue: [ tmp:=OrderedCollection with: BlockClosure]
@@ -201,44 +201,40 @@ ExtractedType >> rootsUnderstanding: selectors [
 	"When the set of selectors is not empty, answer a set of the highest possible classes in the system that implement all the selectors. When the set of selectors is empty, return the empty set."
 
 	| initialClasses nextClasses traverseStack next |
-	selectors isEmpty ifTrue: [^OrderedCollection new].
+	selectors isEmpty
+		ifTrue: [ ^ OrderedCollection new ].
 	nextClasses := OrderedCollection with: Object.
 	traverseStack := OrderedCollection new: 10000.
-		
 	selectors
-		do:
-			[:selector | 
+		do: [ :selector | 
 			initialClasses := nextClasses.
 			nextClasses := OrderedCollection new.
 			initialClasses
-				do:
-					[:initialClass | 
+				do: [ :initialClass | 
 					"inline canUnderstand: for performance"
-					|cl|
+					| cl |
 					cl := initialClass.
-					[(cl == nil) or: [(cl methodDict pointsTo: selector)]] whileFalse: [cl := cl superclass].
-					(cl == nil)
-						ifFalse: [nextClasses addLast: initialClass]
-						ifTrue:
-							[|size|
+					[ cl == nil or: [ cl methodDict pointsTo: selector ] ]
+						whileFalse: [ cl := cl superclass ].
+					cl isNil
+						ifFalse: [ nextClasses addLast: initialClass ]
+						ifTrue: [ | size |
 							traverseStack reset.
 							traverseStack addLast: initialClass.
 							size := 1.
 							"(traverseStack isEmpty) removed for performance"
-							[size = 0]
-								whileFalse:
-									[
-									"(traverseStack removeFirst) removed for performance"
+							[ size = 0 ]
+								whileFalse: [ "(traverseStack removeFirst) removed for performance"
 									next := traverseStack unsafeRemoveFirst.
-									size := size -1.
+									size := size - 1.
 									next
-										subclassesDo:
-											[:subcl |
+										subclassesDo: [ :subcl | 
 											"(subcl includesSelector: selector) removed for performance"
 											(subcl methodDict pointsTo: selector)
-												ifTrue: [nextClasses addLast: subcl]
-												ifFalse: [traverseStack addLast: subcl. size := size + 1]]]]]].
-	^nextClasses
+												ifTrue: [ nextClasses addLast: subcl ]
+												ifFalse: [ traverseStack addLast: subcl.
+													size := size + 1 ] ] ] ] ] ].
+	^ nextClasses
 ]
 
 { #category : #accessing }

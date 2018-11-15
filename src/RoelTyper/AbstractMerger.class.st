@@ -20,7 +20,7 @@ AbstractMerger >> mergeInterfaceTypes: interfaceTypeCollection assignmentTypes: 
 			[:assignmentType | 
 			chain := assignmentType withAllSuperclasses.
 			(interfaceTypeCollection
-				contains: [:superType | chain includes: superType]) not].
+				anySatisfy: [:superType | chain includes: superType]) not].
 	assignmentsToKeep addAll: interfaceTypeCollection.
 	^assignmentsToKeep isEmpty
 		ifTrue: [OrderedCollection with: Object]

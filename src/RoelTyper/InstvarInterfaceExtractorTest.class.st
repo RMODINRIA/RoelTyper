@@ -27,7 +27,7 @@ InstvarInterfaceExtractorTest >> assertAssignments: description in: collector [
 			ivarInterface := desc at: 2.
 			ivarIndex := collector absoluteIndexForVar: ivarName.
 			extractedInterface := collector assignmentsTo: ivarName.
-			self assert: extractedInterface size = ivarInterface size.
+			self assert: extractedInterface size equals: ivarInterface size.
 			self
 				assert:
 					(extractedInterface allSatisfy: [:each | ivarInterface includes: each name]).
@@ -49,7 +49,7 @@ InstvarInterfaceExtractorTest >> assertSends: description in: collector [
 			ivarInterface := desc at: 2.
 			ivarIndex := collector absoluteIndexForVar: ivarName.
 			extractedInterface := collector sendsTo: ivarName.
-			self assert: extractedInterface size = ivarInterface size.
+			self assert: extractedInterface size equals: ivarInterface size.
 			self
 				assert:
 					(extractedInterface allSatisfy: [:each | ivarInterface includes: each]).
@@ -242,7 +242,7 @@ InstvarInterfaceExtractorTest >> testIftrue [
 	| vSends collector |
 	collector := self doForSource: 'u := v isNil ifTrue: [1] ifFalse: [2]'.
 	vSends := collector sendsTo: #v.
-	self assert: vSends size = 1.
+	self assert: vSends size equals: 1.
 	self assert: (vSends includes: #isNil)
 ]
 
@@ -305,7 +305,7 @@ InstvarInterfaceExtractorTest >> testMetaClassAssignment [
 	wIndexRelative := wIndex
 		- (self class allInstVarNames size - self class instVarNames size).
 	wAssignments := collector assignmentsTo: #w.
-	self assert: wAssignments size = 1.
+	self assert: wAssignments size equals: 1.
 	self assert: (wAssignments includes: TypeCollector class).
 	self
 		emptyAssigment: collector typingResults

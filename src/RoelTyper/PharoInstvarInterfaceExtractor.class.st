@@ -48,7 +48,7 @@ PharoInstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector
 
 { #category : #block }
 PharoInstvarInterfaceExtractor >> inABlock [
-	^blockTempsMapping isEmpty not
+	^ blockTempsMapping isNotEmpty
 ]
 
 { #category : #initialization }
