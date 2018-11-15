@@ -1,28 +1,25 @@
 Class {
-	#name : #ConcreteMergerTests,
+	#name : #AbstractMergerTest,
 	#superclass : #TypeMergerTestsRoot,
-	#category : #'RoelTyper-Tests'
+	#category : #'RoelTyper-Tests-Tests'
 }
 
 { #category : #auxiliary }
-ConcreteMergerTests >> mergeClass [
-	^ConcreteMerger
+AbstractMergerTest >> mergeClass [
+	^AbstractMerger
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test1 [
-	"assignment type Array is subtype of interface type Collection
-		-> folding keeps Array and loses Collection"
-
+AbstractMergerTest >> test1 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Collection)
 		assignmentTypes: (OrderedCollection with: Array).
 	self assert: mergeResult size equals: 1.
-	self assert: mergeResult first equals: Array
+	self assert: mergeResult first equals: Collection
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test10 [
+AbstractMergerTest >> test10 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both."
 
 	self
@@ -38,7 +35,7 @@ ConcreteMergerTests >> test10 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test11 [
+AbstractMergerTest >> test11 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both."
 
 	self
@@ -54,7 +51,7 @@ ConcreteMergerTests >> test11 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test12 [
+AbstractMergerTest >> test12 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both. Collection bites the dust because it is superclass."
 
 	self
@@ -63,13 +60,12 @@ ConcreteMergerTests >> test12 [
 			(OrderedCollection
 				with: Dictionary
 				with: Array).
-	self assert: mergeResult size equals: 2.
-	self assert: (mergeResult includes: Dictionary).
-	self assert: (mergeResult includes: Array)
+	self assert: mergeResult size equals: 1.
+	self assert: (mergeResult includes: Collection)
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test13 [
+AbstractMergerTest >> test13 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both. Collection bites the dust because it is superclass."
 
 	self
@@ -78,13 +74,12 @@ ConcreteMergerTests >> test13 [
 			(OrderedCollection
 				with: Array
 				with: Dictionary).
-	self assert: mergeResult size equals: 2.
-	self assert: (mergeResult includes: Dictionary).
-	self assert: (mergeResult includes: Array)
+	self assert: mergeResult size equals: 1.
+	self assert: (mergeResult includes: Collection)
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test14 [
+AbstractMergerTest >> test14 [
 	self
 		mergeInterfaceTypes:
 			(OrderedCollection
@@ -92,15 +87,12 @@ ConcreteMergerTests >> test14 [
 				with: Bag)
 		assignmentTypes: (OrderedCollection with: Array).
 	self assert: mergeResult size equals: 2.
-	self assert: (mergeResult includes: Array).
+	self assert: (mergeResult includes: SequenceableCollection).
 	self assert: (mergeResult includes: Bag)
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test2 [
-	"interface type Array is subclass of assignment type Collection
-		-> folding keeps Array and loses Collection"
-
+AbstractMergerTest >> test2 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Array)
 		assignmentTypes: (OrderedCollection with: Collection).
@@ -110,7 +102,7 @@ ConcreteMergerTests >> test2 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test3 [
+AbstractMergerTest >> test3 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
 		assignmentTypes: OrderedCollection new.
@@ -119,7 +111,7 @@ ConcreteMergerTests >> test3 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test4 [
+AbstractMergerTest >> test4 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Object)
 		assignmentTypes: OrderedCollection new.
@@ -128,7 +120,7 @@ ConcreteMergerTests >> test4 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test5 [
+AbstractMergerTest >> test5 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
 		assignmentTypes: (OrderedCollection with: Object).
@@ -137,7 +129,7 @@ ConcreteMergerTests >> test5 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test6 [
+AbstractMergerTest >> test6 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both"
 
 	self
@@ -149,7 +141,7 @@ ConcreteMergerTests >> test6 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test7 [
+AbstractMergerTest >> test7 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
 		assignmentTypes: (OrderedCollection with: Array).
@@ -158,7 +150,7 @@ ConcreteMergerTests >> test7 [
 ]
 
 { #category : #'folding tests' }
-ConcreteMergerTests >> test8 [
+AbstractMergerTest >> test8 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both"
 
 	self

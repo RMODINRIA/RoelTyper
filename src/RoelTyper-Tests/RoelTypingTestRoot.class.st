@@ -6,7 +6,7 @@ Class {
 		'for',
 		'offsetTest'
 	],
-	#category : #'RoelTyper-Tests'
+	#category : #'RoelTyper-Tests-Tests'
 }
 
 { #category : #auxiliary }

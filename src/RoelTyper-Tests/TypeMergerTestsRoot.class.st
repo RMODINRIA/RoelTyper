@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'mergeResult'
 	],
-	#category : #'RoelTyper-Tests'
+	#category : #'RoelTyper-Tests-Tests'
 }
 
 { #category : #auxiliary }

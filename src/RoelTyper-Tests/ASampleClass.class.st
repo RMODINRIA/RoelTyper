@@ -10,7 +10,7 @@ Class {
 		'f',
 		'g'
 	],
-	#category : #'RoelTyper-Tests'
+	#category : #'RoelTyper-Tests-Tests'
 }
 
 { #category : #'assignments links' }

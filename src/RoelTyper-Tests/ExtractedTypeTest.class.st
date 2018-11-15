@@ -1,7 +1,7 @@
 Class {
 	#name : #ExtractedTypeTest,
 	#superclass : #TestCase,
-	#category : #'RoelTyper-Tests'
+	#category : #'RoelTyper-Tests-Tests'
 }
 
 { #category : #tests }
