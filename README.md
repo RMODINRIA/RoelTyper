@@ -24,3 +24,10 @@ To add RoelTyper to your baseline just add this:
 ```
 
 Note that you can replace the #v1.x.x by a branch as #master or #development or a tag as #v1.0.0, #v1.? or #v1.2.x.
+
+## Smalltalk versions compatibility
+
+| Version 		| Compatible Pharo versions 	| 
+|-------------	|---------------------------	|
+| 1.x.x       	| Pharo 70						|
+| Dev       	| Pharo 70						|
