@@ -105,6 +105,22 @@ PharoInstvarInterfaceExtractor >> pushConsArrayWithElements: anArray [
 ]
 
 { #category : #'instruction decoding' }
+PharoInstvarInterfaceExtractor >> pushFullClosure: compiledBlock numCopied: numCopied receiverOnStack: onStack ignoreOuterContext: ignore [
+
+	| blockSize numArgs | 
+	numArgs := compiledBlock numArgs.
+	blockSize := 3.
+	
+	self newBlockMapping.
+	self blocksArgsBySize add: blockSize + input pc - 1.
+	1 to: numArgs do: [:index | self blockMapping add: #blockArg->index.].
+	numCopied timesRepeat: [ self blockMapping add: stack removeLast afterIndex: numArgs]. 
+	stack addLast: #block.
+	blockArgs := numArgs.
+	
+]
+
+{ #category : #'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushNewArrayOfSize: numElements [ 
 	"Push New Array of size numElements bytecode."
 	stack addLast: #computed 
