@@ -1,15 +1,23 @@
 Class {
-	#name : #RoelTypingTestRoot,
-	#superclass : #TestCase,
+	#name : 'RoelTypingTestRoot',
+	#superclass : 'TestCase',
 	#instVars : [
 		'dummyVariable',
 		'for',
 		'offsetTest'
 	],
-	#category : #'RoelTyper-Tests-Tests'
+	#category : 'RoelTyper-Tests-Tests',
+	#package : 'RoelTyper-Tests',
+	#tag : 'Tests'
 }
 
-{ #category : #auxiliary }
+{ #category : 'testing' }
+RoelTypingTestRoot class >> isAbstract [
+
+	^ self = RoelTypingTestRoot
+]
+
+{ #category : 'auxiliary' }
 RoelTypingTestRoot >> doForSource: src [
 	| m |
 	m := (Smalltalk compiler
@@ -21,7 +29,7 @@ RoelTypingTestRoot >> doForSource: src [
 	^ self processMethod: m
 ]
 
-{ #category : #auxiliary }
+{ #category : 'auxiliary' }
 RoelTypingTestRoot >> processMethod: aCompiledMethod [
 	"Fail by default. Needs to be overridden by subclasses to trigger the base testing backbone."
 

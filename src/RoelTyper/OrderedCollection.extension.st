@@ -1,6 +1,6 @@
-Extension { #name : #OrderedCollection }
+Extension { #name : 'OrderedCollection' }
 
-{ #category : #'*RoelTyper' }
+{ #category : '*RoelTyper' }
 OrderedCollection >> unsafeRemoveFirst [
 	"Remove the first element of the receiver and answer it. If the receiver is 
 	empty, create an error notification."

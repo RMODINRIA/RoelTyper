@@ -1,31 +1,39 @@
 Class {
-	#name : #PharoInstvarInterfaceExtractor,
-	#superclass : #InstvarInterfaceExtractor,
+	#name : 'PharoInstvarInterfaceExtractor',
+	#superclass : 'InstvarInterfaceExtractor',
 	#instVars : [
 		'blockTempsMapping',
 		'blocksLimits'
 	],
-	#category : #'RoelTyper-Pharo'
+	#category : 'RoelTyper-Pharo',
+	#package : 'RoelTyper',
+	#tag : 'Pharo'
 }
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> blockMapping [
 	^ blockTempsMapping last
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> blocksArgsBySize [
 	^ blocksLimits ifNil: [ blocksLimits := OrderedCollection new ]
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> blocksDecrement [
 
 		blocksLimits := blocksLimits select: [:e | (e = input pc) ifTrue: [self removeBlockMapping.  false] ifFalse: [true] ]
 	
 ]
 
-{ #category : #extracting }
+{ #category : 'instruction decoding' }
+PharoInstvarInterfaceExtractor >> callPrimitive: aPrimitive [
+
+	stack add: PrimitiveFailed
+]
+
+{ #category : 'extracting' }
 PharoInstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector [
 	method := m.
 	saveStacks := Dictionary new.
@@ -46,36 +54,36 @@ PharoInstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector
 			]
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> inABlock [
 	^ blockTempsMapping isNotEmpty
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 PharoInstvarInterfaceExtractor >> initialize [
 	super initialize.
 	blockTempsMapping := OrderedCollection new.
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> methodReturnTop [
 	^self pop
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> newBlockMapping [
 	blockTempsMapping add: OrderedCollection new.
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> popIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	"Remove Top Of Stack And Store Into Offset of Temp Vector bytecode."
 	stack removeLast
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
 	"Remove Top Of Stack And Store Into Temporary Variable bytecode."
 
@@ -88,7 +96,13 @@ PharoInstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
 		]
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
+PharoInstvarInterfaceExtractor >> pushActiveProcess [
+	
+	stack add: #thisProcess
+]
+
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushClosureCopyNumCopiedValues: numCopied numArgs: numArgs blockSize: blockSize [
 	self newBlockMapping.
 	self blocksArgsBySize add: blockSize + input pc - 1.
@@ -99,39 +113,44 @@ PharoInstvarInterfaceExtractor >> pushClosureCopyNumCopiedValues: numCopied numA
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushConsArrayWithElements: anArray [
 	stack add: #instcreation->Array
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushFullClosure: compiledBlock numCopied: numCopied receiverOnStack: onStack ignoreOuterContext: ignore [
+	"Sista-like separately compiled closure"
 
-	| blockSize numArgs | 
-	numArgs := compiledBlock numArgs.
-	blockSize := 3.
-	
+	| originalInput |
 	self newBlockMapping.
-	self blocksArgsBySize add: blockSize + input pc - 1.
-	1 to: numArgs do: [:index | self blockMapping add: #blockArg->index.].
-	numCopied timesRepeat: [ self blockMapping add: stack removeLast afterIndex: numArgs]. 
+	originalInput := input.
+	input := InstructionStream on: compiledBlock.
+	1 to: compiledBlock numArgs do: [ :index |
+	self blockMapping add: #blockArg -> index ].
+	numCopied timesRepeat: [
+		self blockMapping add: stack removeLast afterIndex: compiledBlock numArgs ].
+	numCopied to: compiledBlock numTemps - 1 do: [:index | self blockMapping add: #blockTemp->index.].
 	stack addLast: #block.
-	blockArgs := numArgs.
-	
+	[ input atEnd ] whileFalse: [
+		self reloadStack.
+		input interpretNextInstructionFor: self ].
+	input := originalInput.
+	self removeBlockMapping
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushNewArrayOfSize: numElements [ 
 	"Push New Array of size numElements bytecode."
 	stack addLast: #computed 
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	stack addLast: #computed
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushTemporaryVariable: offset [ 
 	"Push Contents Of Temporary Variable Whose Index Is the 
 	argument, offset, On Top Of Stack bytecode."
@@ -143,33 +162,22 @@ PharoInstvarInterfaceExtractor >> pushTemporaryVariable: offset [
 		ifFalse: [stack add: #temp -> offset]
 ]
 
-{ #category : #removing }
+{ #category : 'removing' }
 PharoInstvarInterfaceExtractor >> removeBlockMapping [
 	blockTempsMapping removeLast
 ]
 
-{ #category : #'opcodes-control' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> send: selector numArgs: na [
-	"selector = #shapeBoundsAt:ifPresent: ifTrue: [self halt]".
-	^self nativeSend: selector numArgs: na 
+
+	^ self nativeSend: selector numArgs: na
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> storeIntoTemporaryVariable: offset [
 	"Store Top Of Stack Into Temporary Variable Of Method bytecode."
 
-	"Nothing to do,since I do not treat temporary variables for the moment."
-	
-
 	| rvalue |
-  	stack isEmpty ifTrue: [
-		self flag: 'bug here. For now just do nothing. uncomment the halt to run the example. 
-		It seems that there is a general problem with this method, see also TypeCollector >> handleAssignment:forTmp: '.
-		"Try for example: 
-			TypeCollector typeInstvar:  #superclass ofClassWithLookup:   Behavior "
-		"self halt."
-		^ self.
-		].
 	collector
 		handleAssignment: (rvalue := stack removeLast)
 		forTmp: offset.
