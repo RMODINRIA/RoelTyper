@@ -1,1 +1,1 @@
-Package { #name : #'RoelTyper-Tests' }
+Package { #name : 'RoelTyper-Tests' }

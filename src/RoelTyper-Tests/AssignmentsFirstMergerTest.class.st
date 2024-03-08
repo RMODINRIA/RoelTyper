@@ -1,15 +1,17 @@
 Class {
-	#name : #AssignmentsFirstMergerTest,
-	#superclass : #TypeMergerTestsRoot,
-	#category : #'RoelTyper-Tests-Tests'
+	#name : 'AssignmentsFirstMergerTest',
+	#superclass : 'TypeMergerTestsRoot',
+	#category : 'RoelTyper-Tests-Tests',
+	#package : 'RoelTyper-Tests',
+	#tag : 'Tests'
 }
 
-{ #category : #auxiliary }
+{ #category : 'auxiliary' }
 AssignmentsFirstMergerTest >> mergeClass [
 	^AssignmentsFirstMerger
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test1 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Collection)
@@ -18,7 +20,7 @@ AssignmentsFirstMergerTest >> test1 [
 	self assert: mergeResult first equals: Array
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test10 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both."
 
@@ -33,7 +35,7 @@ AssignmentsFirstMergerTest >> test10 [
 	self assert: (mergeResult includes: Collection)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test11 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both."
 
@@ -48,7 +50,7 @@ AssignmentsFirstMergerTest >> test11 [
 	self assert: (mergeResult includes: Collection)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test12 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both. Collection bites the dust because it is superclass."
 
@@ -63,7 +65,7 @@ AssignmentsFirstMergerTest >> test12 [
 	self assert: (mergeResult includes: Array)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test13 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both. Collection bites the dust because it is superclass."
 
@@ -78,7 +80,7 @@ AssignmentsFirstMergerTest >> test13 [
 	self assert: (mergeResult includes: Dictionary)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test14 [
 	self
 		mergeInterfaceTypes:
@@ -90,7 +92,7 @@ AssignmentsFirstMergerTest >> test14 [
 	self assert: (mergeResult includes: Array)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test2 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Array)
@@ -99,7 +101,7 @@ AssignmentsFirstMergerTest >> test2 [
 	self assert: (mergeResult includes: Collection)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test3 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
@@ -108,7 +110,7 @@ AssignmentsFirstMergerTest >> test3 [
 	self assert: mergeResult first equals: Object
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test4 [
 	self
 		mergeInterfaceTypes: (OrderedCollection with: Object)
@@ -117,7 +119,7 @@ AssignmentsFirstMergerTest >> test4 [
 	self assert: mergeResult first equals: Object
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test5 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
@@ -126,7 +128,7 @@ AssignmentsFirstMergerTest >> test5 [
 	self assert: mergeResult first equals: Object
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test6 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both"
 
@@ -138,7 +140,7 @@ AssignmentsFirstMergerTest >> test6 [
 	self assert: (mergeResult includes: Array)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test7 [
 	self
 		mergeInterfaceTypes: OrderedCollection new
@@ -147,7 +149,7 @@ AssignmentsFirstMergerTest >> test7 [
 	self assert: (mergeResult includes: Array)
 ]
 
-{ #category : #'folding tests' }
+{ #category : 'folding tests' }
 AssignmentsFirstMergerTest >> test8 [
 	"Dictionary and Array are in unrelated hierarchies -> keep both"
 
