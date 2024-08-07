@@ -1,15 +1,13 @@
 Class {
-	#name : 'ExtractedTypeForTmp',
-	#superclass : 'ExtractedType',
+	#name : #ExtractedTypeForTmp,
+	#superclass : #ExtractedType,
 	#instVars : [
 		'compiledMethod'
 	],
-	#category : 'RoelTyper-Core',
-	#package : 'RoelTyper',
-	#tag : 'Core'
+	#category : 'RoelTyper-Core'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 ExtractedTypeForTmp class >> forTmpOffset: offset ofCompiledMethod: aCompiledMethod inClass: aClass [
 	^ self new 
 		tempOffset: offset;
@@ -18,28 +16,28 @@ ExtractedTypeForTmp class >> forTmpOffset: offset ofCompiledMethod: aCompiledMet
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 ExtractedTypeForTmp >> asBlockArgInTypeCollector: aTypeCollector [
 	aTypeCollector transformAsBlockArg: self 
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 ExtractedTypeForTmp >> compiledMethod [
 	^ compiledMethod
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 ExtractedTypeForTmp >> compiledMethod: anObject [
 	compiledMethod := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 ExtractedTypeForTmp >> tempOffset [
 	^ivarName 
 	
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 ExtractedTypeForTmp >> tempOffset: anOffset [
 	ivarName := anOffset
 ]

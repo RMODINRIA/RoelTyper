@@ -2,14 +2,12 @@
 (TypeCollector typeTmpsIn: (ASampleClass>>#return) ofClass: ASampleClass)
 "
 Class {
-	#name : 'PharoTypeCollector',
-	#superclass : 'TypeCollector',
-	#category : 'RoelTyper-Pharo',
-	#package : 'RoelTyper',
-	#tag : 'Pharo'
+	#name : #PharoTypeCollector,
+	#superclass : #TypeCollector,
+	#category : 'RoelTyper-Pharo'
 }
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 PharoTypeCollector >> assignmentTypeOf: val [
 	val isBehavior ifTrue: [^val].
 	val isVariableBinding
@@ -20,7 +18,7 @@ PharoTypeCollector >> assignmentTypeOf: val [
 	^nil
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 PharoTypeCollector >> languageSpecificPushSendOf: selector to: rec args: args [
 	(#(#// #quo: #rem: #\\ #ceiling #floor #rounded #roundTo: #truncated #truncateTo: #/ #+ #- #* #abs #negated #reciprocal)
 		includes: selector)
@@ -34,7 +32,7 @@ PharoTypeCollector >> languageSpecificPushSendOf: selector to: rec args: args [
 	^#computed
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 PharoTypeCollector >> newExtractor [
 	^PharoInstvarInterfaceExtractor new
 ]

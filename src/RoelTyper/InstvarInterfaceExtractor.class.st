@@ -13,8 +13,8 @@ Instance Variables:
 
 "
 Class {
-	#name : 'InstvarInterfaceExtractor',
-	#superclass : 'InstructionClient',
+	#name : #InstvarInterfaceExtractor,
+	#superclass : #InstructionClient,
 	#instVars : [
 		'stack',
 		'copied',
@@ -26,43 +26,41 @@ Class {
 		'blockTraversal',
 		'blockArgs'
 	],
-	#category : 'RoelTyper-Core',
-	#package : 'RoelTyper',
-	#tag : 'Core'
+	#category : 'RoelTyper-Core'
 }
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> blockReturnTop [
 	"Return Top Of Stack bytecode."
 
 	^self pop
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> copied: list [
 	copied := list
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> doDup [
 	"Duplicate Top Of Stack bytecode."
 
 	self dupFirst
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> doPop [
 	"Remove Top Of Stack bytecode."
 
 	^self pop
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> dupFirst [
 	stack add: stack last
 ]
 
-{ #category : 'extracting' }
+{ #category : #extracting }
 InstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector [
 	method := m.
 	saveStacks := Dictionary new.
@@ -79,19 +77,19 @@ InstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector [
 			input interpretNextInstructionFor: self]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> initialize [
 	super initialize.
 	blockTraversal := false.
 	blockArgs := 0.
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> input [
 	^input
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> jump: delta [
 	| currentPC |
 	currentPC := self input pc.
@@ -103,7 +101,7 @@ InstvarInterfaceExtractor >> jump: delta [
 	
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> jump: delta if: condition [
 	|top|
 	(top := stack last)
@@ -124,13 +122,13 @@ InstvarInterfaceExtractor >> jump: delta if: condition [
 			(stack copy)
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> method: aMethod [
 	method := aMethod.
 	copied := #()
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> methodReturnConstant: value [
 	"Return Constant bytecode."
 	collector addAssignmentForReturn: value class.  
@@ -139,7 +137,7 @@ InstvarInterfaceExtractor >> methodReturnConstant: value [
 		sqReturnTop
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> methodReturnReceiver [
 	"Return Self bytecode."
 	collector addAssignmentForReturnSelf.  
@@ -148,14 +146,14 @@ InstvarInterfaceExtractor >> methodReturnReceiver [
 		sqReturnTop
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> methodReturnTop [
 	"Return Top Of Stack bytecode."
 	collector addAssignmentForReturn: stack last.
 	^self sqReturnTop
 ]
 
-{ #category : 'opcodes-control' }
+{ #category : #'opcodes-control' }
 InstvarInterfaceExtractor >> nativeSend: selector numArgs: na [ 
 	| receiver args |
 	args := stack removeLast: na.
@@ -190,19 +188,19 @@ InstvarInterfaceExtractor >> nativeSend: selector numArgs: na [
 			args: args)
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> pop [
 	stack removeLast
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> popIntoLiteralVariable: anAssociation [
 	"Remove Top Of Stack And Store Into Literal Variable bytecode."
 
 	^self pop
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> popIntoReceiverVariable: offset [
 	"Remove Top Of Stack And Store Into Instance Variable bytecode."
 
@@ -211,7 +209,7 @@ InstvarInterfaceExtractor >> popIntoReceiverVariable: offset [
 		for: offset
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
 	"Remove Top Of Stack And Store Into Temporary Variable bytecode."
 
@@ -223,14 +221,14 @@ InstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
 		forTmp: offset
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> pushActiveContext [
 	"Push Active Context On Top Of Its Own Stack bytecode."
 
 	self pushContext
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> pushConstant: value [
 	value class == BlockClosure
 		ifTrue:
@@ -242,29 +240,29 @@ InstvarInterfaceExtractor >> pushConstant: value [
 			stack addLast: value class]
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> pushContext [
 	stack add: #context
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> pushInst: index [
 	stack add: index
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> pushLiteralVariable: anAssociation [
 	"Push Contents Of anAssociation On Top Of Stack bytecode."
 
 	self pushStatic: anAssociation
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> pushReceiver [
 	stack addLast: #self
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> pushReceiverVariable: offset [
 	"Push Contents Of the Receiver's Instance Variable Whose Index 
 	is the argument, offset, On Top Of Stack bytecode."
@@ -272,14 +270,14 @@ InstvarInterfaceExtractor >> pushReceiverVariable: offset [
 	self pushInst: offset
 ]
 
-{ #category : 'opcodes-data movement' }
+{ #category : #'opcodes-data movement' }
 InstvarInterfaceExtractor >> pushStatic: assoc [
 	"assoc can be an association OR a variable binding. I just push the complete association, since it does not interest me for the moment."
 
 	stack addLast: assoc
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> pushTemporaryVariable: offset [
 	"Push Contents Of Temporary Variable Whose Index Is the 
 	argument, offset, On Top Of Stack bytecode."
@@ -287,7 +285,7 @@ InstvarInterfaceExtractor >> pushTemporaryVariable: offset [
 	stack add: (#temp -> offset)
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> readBlock: block copied: count [
 	| newCopied |
 	newCopied := stack removeLast: count.
@@ -298,7 +296,7 @@ InstvarInterfaceExtractor >> readBlock: block copied: count [
 			addTo: collector
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> reloadStack [
 
 	stack := self saveStacks
@@ -308,20 +306,20 @@ InstvarInterfaceExtractor >> reloadStack [
 		^ self ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> saveStacks [
 	saveStacks ifNil: [saveStacks := Dictionary new].
 	^saveStacks
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> send: selector numArgs: na [
 	
 	self nativeSend: selector numArgs: na.
 	(stack last = #block and: [blockArgs > 0])ifTrue: [blockTraversal := true]
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> send: selector super: supered numArgs: numberArguments [
 	"Send Message With Selector, selector, bytecode. The argument, 
 	supered, indicates whether the receiver of the message is specified with 
@@ -340,20 +338,20 @@ InstvarInterfaceExtractor >> send: selector super: supered numArgs: numberArgume
 				numArgs: numberArguments]
 ]
 
-{ #category : 'opcodes-control' }
+{ #category : #'opcodes-control' }
 InstvarInterfaceExtractor >> sendSuper: selector numArgs: na [
 	stack removeLast: na + 1.
 	stack add: #computed
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 InstvarInterfaceExtractor >> sqReturnTop [
 	"In VW, method returnTop is inherited from instructionClient and does nothing."
 
 	
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> storeIntoLiteralVariable: anAssociation [
 	"Store Top Of Stack Into Literal Variable Of Method bytecode."
 
@@ -362,7 +360,7 @@ InstvarInterfaceExtractor >> storeIntoLiteralVariable: anAssociation [
 	
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> storeIntoReceiverVariable: offset [
 	"Store Top Of Stack Into Instance Variable Of Method bytecode."
 
@@ -373,7 +371,7 @@ InstvarInterfaceExtractor >> storeIntoReceiverVariable: offset [
 	stack add: rvalue
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : #'instruction decoding' }
 InstvarInterfaceExtractor >> storeIntoTemporaryVariable: offset [
 	"Store Top Of Stack Into Temporary Variable Of Method bytecode."
 

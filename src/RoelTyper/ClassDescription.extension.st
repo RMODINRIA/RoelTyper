@@ -1,6 +1,6 @@
-Extension { #name : 'ClassDescription' }
+Extension { #name : #ClassDescription }
 
-{ #category : '*RoelTyper-organization' }
+{ #category : #'*RoelTyper-organization' }
 ClassDescription >> categoryForSelector: aSelector [
 	"Starting from the receiver, find the category for the given selector (if any). "
 

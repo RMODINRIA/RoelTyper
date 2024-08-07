@@ -1,6 +1,6 @@
-Extension { #name : 'InstructionStream' }
+Extension { #name : #InstructionStream }
 
-{ #category : '*RoelTyper' }
+{ #category : #'*RoelTyper' }
 InstructionStream >> printOn: aStream [
 
 	super printOn: aStream.

@@ -18,21 +18,19 @@ Number of different merging approaches:
 
 "
 Class {
-	#name : 'TypeMerger',
-	#superclass : 'Object',
-	#category : 'RoelTyper-Core',
-	#package : 'RoelTyper',
-	#tag : 'Core'
+	#name : #TypeMerger,
+	#superclass : #Object,
+	#category : 'RoelTyper-Core'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeMerger class >> interfaceTypes: interfaceTypeCollection assignmentTypes: assignmentTypesCollection [
 	^self new
 		mergeInterfaceTypes: interfaceTypeCollection
 		assignmentTypes: assignmentTypesCollection
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeMerger >> cleanBooleansIn: collection [
 	"Remove all occurences of True, False and Boolean in the given collection. If any element was removed, add Boolean"
 
@@ -51,7 +49,7 @@ TypeMerger >> cleanBooleansIn: collection [
 		ifTrue: [collection]
 ]
 
-{ #category : 'public' }
+{ #category : #public }
 TypeMerger >> mergeInterfaceTypes: interfaceTypeCollection assignmentTypes: assignmentTypesCollection [
 	"interfaceTypes is a set of trees of types reconstructed by looking at the interfaces.
 	assignmentTypes is a set of trees of types reconstructed by looking at the assignments.

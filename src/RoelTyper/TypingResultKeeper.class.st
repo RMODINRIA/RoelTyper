@@ -17,18 +17,16 @@ TypingResultKeeper calculateTypesForClass: Point
 TypingResultKeeper forImageExpanded
 "
 Class {
-	#name : 'TypingResultKeeper',
-	#superclass : 'Object',
+	#name : #TypingResultKeeper,
+	#superclass : #Object,
 	#instVars : [
 		'timeTaken',
 		'typeResults'
 	],
-	#category : 'RoelTyper-Core',
-	#package : 'RoelTyper',
-	#tag : 'Core'
+	#category : 'RoelTyper-Core'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypingResultKeeper class >> benchmarkImage [
 	"self benchmarkImage"
 
@@ -39,12 +37,12 @@ TypingResultKeeper class >> benchmarkImage [
 			keeper withAllInstvarResultsDo: [:cl :iv :result | result types]]
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypingResultKeeper class >> forImage [
 	^self new forImage
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypingResultKeeper class >> forImageExpanded [
 	| keeper |
 	keeper := self forImage.
@@ -52,7 +50,7 @@ TypingResultKeeper class >> forImageExpanded [
 	^keeper
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypingResultKeeper >> addCollectorResult: collectorResult [
 	collectorResult isEmpty ifTrue: [^self].
 	typeResults
@@ -60,7 +58,7 @@ TypingResultKeeper >> addCollectorResult: collectorResult [
 		put: collectorResult
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypingResultKeeper >> addTypingResult: aTypeResult [
 	| typeResultsForClass |
 	typeResultsForClass := self typeResults
@@ -71,12 +69,12 @@ TypingResultKeeper >> addTypingResult: aTypeResult [
 		put: aTypeResult
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> calculateTypesForClass: aClass [
 	^TypeCollector typeInstvarsOfClass: aClass
 ]
 
-{ #category : 'public' }
+{ #category : #public }
 TypingResultKeeper >> forClasses: aClassList [
 	| collector |
 	collector := TypeCollector new.
@@ -90,17 +88,17 @@ TypingResultKeeper >> forClasses: aClassList [
 							[self addCollectorResult: (collector typeInstvarsOfClass: cl)]]]
 ]
 
-{ #category : 'public' }
+{ #category : #public }
 TypingResultKeeper >> forImage [
 	self forClasses: Object allSubclasses
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 TypingResultKeeper >> initialize [
 	typeResults := IdentityDictionary new
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> nrObjectTypes [
 	| nr |
 	nr := 0.
@@ -110,7 +108,7 @@ TypingResultKeeper >> nrObjectTypes [
 	^nr
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> nrUniqueTypes [
 	| nr |
 	nr := 0.
@@ -120,14 +118,14 @@ TypingResultKeeper >> nrUniqueTypes [
 	^nr
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> resetTypesForClass: aClass [
 	^typeResults
 		removeKey: aClass
 		ifAbsent: []
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypingResultKeeper >> resultsForClass: aClass instvar: instvar ifAbsent: absentBlock [
 	| ivars |
 	ivars := typeResults
@@ -138,7 +136,7 @@ TypingResultKeeper >> resultsForClass: aClass instvar: instvar ifAbsent: absentB
 		ifAbsent: absentBlock
 ]
 
-{ #category : 'statistics' }
+{ #category : #statistics }
 TypingResultKeeper >> sameTypesAs: otherKeeper [
 	| result correspondingResult |
 	result := OrderedCollection new.
@@ -153,24 +151,24 @@ TypingResultKeeper >> sameTypesAs: otherKeeper [
 	^result
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> timeTaken [
 	^timeTaken
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> typeResults [
 	^typeResults
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> typesForClass: aClass [
 	^typeResults
 		at: aClass
 		ifAbsentPut: [self calculateTypesForClass: aClass]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypingResultKeeper >> typesForClass: aClass instvar: instvar [
 	^(self typesForClass: aClass)
 		at: instvar
@@ -180,7 +178,7 @@ TypingResultKeeper >> typesForClass: aClass instvar: instvar [
 				inClass: aClass]
 ]
 
-{ #category : 'enumerating' }
+{ #category : #enumerating }
 TypingResultKeeper >> withAllInstvarResultsDo: aBlock [
 	self typeResults
 		keysAndValuesDo:

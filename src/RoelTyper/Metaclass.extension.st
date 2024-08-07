@@ -1,6 +1,6 @@
-Extension { #name : 'Metaclass' }
+Extension { #name : #Metaclass }
 
-{ #category : '*RoelTyper-enumerating' }
+{ #category : #'*RoelTyper-enumerating' }
 Metaclass >> nonMetaSubclassesDo: aBlock [
 	"Evaluate the argument, aBlock, for each of the receiver's immediate non-meta subclasses."
 

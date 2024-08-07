@@ -18,8 +18,8 @@ Our type-reconstruction algorithm can be decomposed into three phases:
 	3. merging. This phase takes the interface types and the assignment types as input, and merges them into the final type results for the variable.
 "
 Class {
-	#name : 'TypeCollector',
-	#superclass : 'Object',
+	#name : #TypeCollector,
+	#superclass : #Object,
 	#instVars : [
 		'theClass',
 		'instVars',
@@ -27,45 +27,43 @@ Class {
 		'currentExtractedMethod',
 		'localTypingResults'
 	],
-	#category : 'RoelTyper-Core',
-	#package : 'RoelTyper',
-	#tag : 'Core'
+	#category : 'RoelTyper-Core'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> collectorAfterTypeInstvarsOfClass: aClass [
 	"self typeInstvarsOfClass: Point"
 
 	^self new typeInstvarsOfClass: aClass; yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> new [
 	"Override new to return either a VWTypeCollector or a SqueakTypeCollector"
 
 	^self newForPlatform
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> newForPlatform [
 	"Return either a VWTypeCollector or a SqueakTypeCollector, depending on the platform used."
 
 	^PharoTypeCollector basicNew
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> onClass: aClass [
 	^self new onClass: aClass
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> typeInstvar: var ofClass: aClass [
 	"self typeInstvar: #x ofClass: Point "
 
 	^(self new typeInstvarsOfClass: aClass) at: var
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> typeInstvar: var ofClassWithLookup: aClass [ 
 	"self typeInstvar: #origin ofClassWithLookup: Quadrangle"
 	| theClass |
@@ -78,21 +76,21 @@ TypeCollector class >> typeInstvar: var ofClassWithLookup: aClass [
 	^ self typeInstvar: var ofClass: theClass
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> typeInstvarsOfClass: aClass [
 	"self typeInstvarsOfClass: Point"
 
 	^self new typeInstvarsOfClass: aClass
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> typeTmpsIn: aCompiledMethod ofClass: aClass [
 	"self typeInstvarsOfClass: Point"
 
 	^self new typeTmpsIn: aCompiledMethod ofClass: aClass
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 TypeCollector class >> versionString [
 	"Take the removal of the standard version method on Smalltalk into account for Squeak :-( "
 
@@ -101,38 +99,38 @@ TypeCollector class >> versionString [
 		ifAbsent: [^Smalltalk version]) current version
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> absoluteIndexForVar: iVar [
 	"Note: works for Squeak and VisualWorks. If it would be only for VW, you could just use instVarIndexFor: instead."
 
 	^instVars indexOf: iVar
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addAssignment: value to: index [
 	self
 		withTranslatedIndex: index
 		do: [ :i | (self typingResults at: i) addAssignment: value ]
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addAssignment: val toReturnOf: aSelector [  
 	| eT |
 	eT := self extractedTypeForReturnInMethod: (theClass >> aSelector).
 	eT addAssignment: val.
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addAssignment: value toTmp: index [ 
 	((localTypingResults at: currentExtractedMethod) at: index + 1) addAssignment: value
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addAssignment: value toTmp: index in: aCompiledMethod [
 	((localTypingResults at: aCompiledMethod) at: index + 1) addAssignment: value
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addAssignmentForReturn: val [ 
 	| eT |
 	eT := self extractedTypeForReturnInMethod: currentExtractedMethod.
@@ -156,12 +154,12 @@ TypeCollector >> addAssignmentForReturn: val [
 						ifFalse: [(self assignmentTypeOf: val) ifNotNil: [ :result | eT addAssignment: result ] ] ] ]]
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addAssignmentForReturnSelf [
 	(self extractedTypeForReturnInMethod: currentExtractedMethod) addAssignment: theClass
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 TypeCollector >> addLocalTypingResultsFor: aCompiledCode [
 
 	localTypingResults
@@ -173,13 +171,13 @@ TypeCollector >> addLocalTypingResultsFor: aCompiledCode [
 					 inClass: aCompiledCode methodClass ]) asArray
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addSend: selector onReturnOfSelfMethod: aSelfSelector [
 	"Add a range check to filter out sends to instvars defined in superclasses, etc."
 	(self extractedTypeForReturnInMethod: theClass >> aSelfSelector) addSend: selector
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addSend: selector to: index [
 	"Add a range check to filter out sends to instvars defined in superclasses, etc."
 
@@ -188,58 +186,58 @@ TypeCollector >> addSend: selector to: index [
 		do: [:i | (self typingResults at: i) addSend: selector]
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> addSend: selector toTmp: index [ 
 	"Add a range check to filter out sends to instvars defined in superclasses, etc."
 	((localTypingResults at: currentExtractedMethod ) at: index + 1) addSend: selector
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> allInstVarTypes [
 	self typingResults do: [ :each | each types ]
 	
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> allTmpTypes [
 
 	localTypingResults valuesDo: [ :array | array do: [ :et | et types]]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> allTypes [
 	self typingResults do: [ :each | each types ].
 	localTypingResults valuesDo: [ :array | array do: [ :et | et types ]]
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 TypeCollector >> assignmentTypeOf: val [
 	^self subclassResponsibility
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> assignmentsTo: instVarName [
 	^ (self typingResultsFor: instVarName) flattenLinks; assignments
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> currentExtractedMethod [
 	^ currentExtractedMethod
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> currentExtractedMethod: anObject [
 
 	currentExtractedMethod := anObject.
 	self addLocalTypingResultsFor: anObject
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> extractedTypeForReturnInMethod: aCompiledMethod [
 	^(localTypingResults at: aCompiledMethod) last
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 TypeCollector >> handleAssignment: val for: index [ 
 	val isInteger 
 		ifTrue: 
@@ -265,7 +263,7 @@ TypeCollector >> handleAssignment: val for: index [
 									to: index ] ] ] ]]
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 TypeCollector >> handleAssignment: val forTmp: index [ 
 	"Cannot use ifNotNil: with argument in Squeak, so use a temporary instead."
 	
@@ -304,7 +302,7 @@ TypeCollector >> handleAssignment: val forTmp: index [
 							toTmp: index ] ] ]]]
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 TypeCollector >> handleAssignment: val forTmp: index in: aCompiledMethod [
 	"Cannot use ifNotNil: with argument in Squeak, so use a temporary instead."
 	val isInteger 
@@ -334,12 +332,12 @@ TypeCollector >> handleAssignment: val forTmp: index in: aCompiledMethod [
 							in: aCompiledMethod ] ] ]]]
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 TypeCollector >> languageSpecificPushSendOf: selector to: rec args: args [
 	^#computed
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeCollector >> lastAssignmentForIndex: anIndex [
 	| assignments |
 	assignments := (self typingResults at: anIndex) assignments.
@@ -348,7 +346,7 @@ TypeCollector >> lastAssignmentForIndex: anIndex [
 		ifFalse: [assignments last]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeCollector >> lastAssignmentForTmpIndex: anIndex [ 
 	| assignments |
 	assignments := ((localTypingResults at: currentExtractedMethod) at: anIndex) assignments.
@@ -357,14 +355,14 @@ TypeCollector >> lastAssignmentForTmpIndex: anIndex [
 		ifFalse: [ assignments last ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeCollector >> newExtractor [
 	"Return a new extractor class. This is typically Smalltalk dialect dependent, so subclasses have to override to choose the one they want."
 
 	^self subclassResponsibility
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 TypeCollector >> onClass: aClass [
 
 	theClass := aClass.
@@ -377,7 +375,7 @@ TypeCollector >> onClass: aClass [
 		self addLocalTypingResultsFor: cm ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> packagedResults [
 	| results |
 	results := IdentityDictionary new.
@@ -398,7 +396,7 @@ TypeCollector >> packagedResults [
 	^results
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> packagedResultsForCompiledMethod: aCompiledMethod [
 	| results arr tmpNames numberOfTemporaryVariables |
 	results := IdentityDictionary new.
@@ -412,7 +410,7 @@ TypeCollector >> packagedResultsForCompiledMethod: aCompiledMethod [
 	^results
 ]
 
-{ #category : 'heuristics' }
+{ #category : #heuristics }
 TypeCollector >> pushSendOf: selector to: rec args: args [
 	"Needs to be optimized"
 
@@ -452,18 +450,18 @@ TypeCollector >> pushSendOf: selector to: rec args: args [
 		args: args
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> sendsTo: instVarName [
 
 	^ (self typingResultsFor: instVarName) interface
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 TypeCollector >> theClass [
 	^theClass
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> transformAsBlockArg: anExtractedTypeForTmp [ 
 	(localTypingResults at: anExtractedTypeForTmp compiledMethod) 
 		at: anExtractedTypeForTmp tempOffset
@@ -473,17 +471,17 @@ TypeCollector >> transformAsBlockArg: anExtractedTypeForTmp [
 				inClass: anExtractedTypeForTmp ivarClass)
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> transformAsBlockArgTheTmpOffset: offset [ 
 	((localTypingResults at: currentExtractedMethod ) at: (offset + 1)) asBlockArgInTypeCollector: self
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 TypeCollector >> transformAsBlockArgTheTmpOffset: offset in: aCompiledMethod [ 
 	((localTypingResults at: aCompiledMethod ) at: (offset + 1)) asBlockArgInTypeCollector: self
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeCollector >> tryUsing: receiver for: selector ifNotUse: aClass [
 	"If receiver has a type, and the selector is understood by that type, pass that type. If not, use aClass as type."
 
@@ -494,7 +492,7 @@ TypeCollector >> tryUsing: receiver for: selector ifNotUse: aClass [
 		ifFalse: [ aClass ]
 ]
 
-{ #category : 'public-typing' }
+{ #category : #'public-typing' }
 TypeCollector >> typeInstvarsOfClass: aClass [
 	| extractor|
 	self onClass: aClass.
@@ -509,7 +507,7 @@ TypeCollector >> typeInstvarsOfClass: aClass [
 	^self packagedResults
 ]
 
-{ #category : 'public-typing' }
+{ #category : #'public-typing' }
 TypeCollector >> typeTmpsIn: aCompiledMethod ofClass: aClass [
 	| extractor|
 	self onClass: aClass.
@@ -524,17 +522,17 @@ TypeCollector >> typeTmpsIn: aCompiledMethod ofClass: aClass [
 	^self packagedResultsForCompiledMethod: aCompiledMethod
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 TypeCollector >> typingResults [
 	^ typingResults
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeCollector >> typingResultsFor: instVarName [
 	^self typingResults at: (self absoluteIndexForVar: instVarName)
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 TypeCollector >> withTranslatedIndex: index do: aBlock [
 	aBlock value: index + 1
 ]
