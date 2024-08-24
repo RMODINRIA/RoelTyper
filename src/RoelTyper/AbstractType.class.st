@@ -3,9 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'ivarClass',
-		'ivarName',
-		'nbOfCorrectTypes',
-		'nbOfIncorrectTypes'
+		'ivarName'
 	],
 	#category : #'RoelTyper-Core'
 }
@@ -49,6 +47,11 @@ AbstractType >> initialize [
 	"Do nothing, but give subclasses the chance to override."
 
 	
+]
+
+{ #category : #'as yet unclassified' }
+AbstractType >> interface [
+	^ self subclassResponsibility
 ]
 
 { #category : #testing }

@@ -27,7 +27,7 @@ Class {
 		'currentExtractedMethod',
 		'localTypingResults'
 	],
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core'
 }
 
 { #category : #'instance creation' }
@@ -159,6 +159,18 @@ TypeCollector >> addAssignmentForReturnSelf [
 	(self extractedTypeForReturnInMethod: currentExtractedMethod) addAssignment: theClass
 ]
 
+{ #category : #'initialize-release' }
+TypeCollector >> addLocalTypingResultsFor: aCompiledCode [
+
+	localTypingResults
+		at: aCompiledCode
+		put: ((1 to: aCompiledCode numTemps + 1) collect: [ :each |
+				 ExtractedTypeForTmp
+					 forTmpOffset: each
+					 ofCompiledMethod: aCompiledCode
+					 inClass: aCompiledCode methodClass ]) asArray
+]
+
 { #category : #adding }
 TypeCollector >> addSend: selector onReturnOfSelfMethod: aSelfSelector [
 	"Add a range check to filter out sends to instvars defined in superclasses, etc."
@@ -215,9 +227,9 @@ TypeCollector >> currentExtractedMethod [
 
 { #category : #accessing }
 TypeCollector >> currentExtractedMethod: anObject [
+
 	currentExtractedMethod := anObject.
-	localTypingResults at: anObject put: ((1 to: anObject numTemps + 1) collect: [:each | ExtractedTypeForTmp 
-					forTmpOffset: each ofCompiledMethod:  anObject inClass: anObject methodClass  ]) asArray 
+	self addLocalTypingResultsFor: anObject
 ]
 
 { #category : #adding }
@@ -255,11 +267,13 @@ TypeCollector >> handleAssignment: val for: index [
 TypeCollector >> handleAssignment: val forTmp: index [ 
 	"Cannot use ifNotNil: with argument in Squeak, so use a temporary instead."
 	
-	(localTypingResults at: currentExtractedMethod) at: index + 1 ifAbsent: [
-		self flag: 'bug here. For now just do nothing. uncomment the halt to run the example'.
+	(localTypingResults at: currentExtractedMethod) size <= index ifTrue: [
+		self flag: 'bug here. For now just do nothing. uncomment the halt to run the example or make the test fail'.
 		"this case seems to be broken for now. "
 		"Try for example: 
-			TypeCollector typeInstvar:  #lastStepMessage ofClassWithLookup:  WorldState "
+			TypeCollector typeInstvar:  #lastStepMessage ofClassWithLookup:  WorldState 
+		or run TypeCollectorTest>>#testBlockTemps"
+		"Problem seems to be in fact that the temp is on a block level, not the method and collector only has slots for method-level temps"
 		"self halt."
 		^ self.
 		].
@@ -349,22 +363,16 @@ TypeCollector >> newExtractor [
 ]
 
 { #category : #'initialize-release' }
-TypeCollector >> onClass: aClass [ 
+TypeCollector >> onClass: aClass [
+
 	theClass := aClass.
-	instVars := aClass allInstVarNames collect: [ :e | e asSymbol].
-	typingResults := (instVars collect: 
-		[ :ivar | 
-		ExtractedType 
-			forInstvar: ivar
-			inClass: aClass ]) asArray.
+	instVars := aClass allInstVarNames collect: [ :e | e asSymbol ].
+	typingResults := (instVars collect: [ :ivar |
+		                  ExtractedType forInstvar: ivar inClass: aClass ])
+		                 asArray.
 	localTypingResults := IdentityDictionary new.
-	theClass selectorsAndMethodsDo: [:sel :cm | 
-	localTypingResults 
-			at: cm
-			put: ((1 to: cm numTemps + 1) collect:  "the last one is for the method returned object"
-				[ :i | 
-				ExtractedTypeForTmp 
-					forTmpOffset: i ofCompiledMethod:  cm inClass: theClass ]) asArray]
+	theClass selectorsAndMethodsDo: [ :sel :cm |
+		self addLocalTypingResultsFor: cm ]
 ]
 
 { #category : #accessing }

@@ -7,7 +7,7 @@ Class {
 		'extractedTypes',
 		'links'
 	],
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core'
 }
 
 { #category : #'instance creation' }

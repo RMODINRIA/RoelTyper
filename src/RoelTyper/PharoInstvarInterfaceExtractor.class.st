@@ -5,7 +5,7 @@ Class {
 		'blockTempsMapping',
 		'blocksLimits'
 	],
-	#category : #'RoelTyper-Pharo'
+	#category : 'RoelTyper-Pharo'
 }
 
 { #category : #block }
@@ -23,6 +23,12 @@ PharoInstvarInterfaceExtractor >> blocksDecrement [
 
 		blocksLimits := blocksLimits select: [:e | (e = input pc) ifTrue: [self removeBlockMapping.  false] ifFalse: [true] ]
 	
+]
+
+{ #category : #'instruction decoding' }
+PharoInstvarInterfaceExtractor >> callPrimitive: aPrimitive [
+
+	stack add: PrimitiveFailed
 ]
 
 { #category : #extracting }
@@ -89,6 +95,12 @@ PharoInstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
 ]
 
 { #category : #'instruction decoding' }
+PharoInstvarInterfaceExtractor >> pushActiveProcess [
+	
+	stack add: #thisProcess
+]
+
+{ #category : #'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushClosureCopyNumCopiedValues: numCopied numArgs: numArgs blockSize: blockSize [
 	self newBlockMapping.
 	self blocksArgsBySize add: blockSize + input pc - 1.
@@ -106,18 +118,23 @@ PharoInstvarInterfaceExtractor >> pushConsArrayWithElements: anArray [
 
 { #category : #'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushFullClosure: compiledBlock numCopied: numCopied receiverOnStack: onStack ignoreOuterContext: ignore [
+	"Sista-like separately compiled closure"
 
-	| blockSize numArgs | 
-	numArgs := compiledBlock numArgs.
-	blockSize := 3.
-	
+	| originalInput |
 	self newBlockMapping.
-	self blocksArgsBySize add: blockSize + input pc - 1.
-	1 to: numArgs do: [:index | self blockMapping add: #blockArg->index.].
-	numCopied timesRepeat: [ self blockMapping add: stack removeLast afterIndex: numArgs]. 
+	originalInput := input.
+	input := InstructionStream on: compiledBlock.
+	1 to: compiledBlock numArgs do: [ :index |
+	self blockMapping add: #blockArg -> index ].
+	numCopied timesRepeat: [
+		self blockMapping add: stack removeLast afterIndex: compiledBlock numArgs ].
+	numCopied to: compiledBlock numTemps - 1 do: [:index | self blockMapping add: #blockTemp->index.].
 	stack addLast: #block.
-	blockArgs := numArgs.
-	
+	[ input atEnd ] whileFalse: [
+		self reloadStack.
+		input interpretNextInstructionFor: self ].
+	input := originalInput.
+	self removeBlockMapping
 ]
 
 { #category : #'instruction decoding' }
@@ -148,28 +165,17 @@ PharoInstvarInterfaceExtractor >> removeBlockMapping [
 	blockTempsMapping removeLast
 ]
 
-{ #category : #'opcodes-control' }
+{ #category : #'instruction decoding' }
 PharoInstvarInterfaceExtractor >> send: selector numArgs: na [
-	"selector = #shapeBoundsAt:ifPresent: ifTrue: [self halt]".
-	^self nativeSend: selector numArgs: na 
+
+	^ self nativeSend: selector numArgs: na
 ]
 
 { #category : #'instruction decoding' }
 PharoInstvarInterfaceExtractor >> storeIntoTemporaryVariable: offset [
 	"Store Top Of Stack Into Temporary Variable Of Method bytecode."
 
-	"Nothing to do,since I do not treat temporary variables for the moment."
-	
-
 	| rvalue |
-  	stack isEmpty ifTrue: [
-		self flag: 'bug here. For now just do nothing. uncomment the halt to run the example. 
-		It seems that there is a general problem with this method, see also TypeCollector >> handleAssignment:forTmp: '.
-		"Try for example: 
-			TypeCollector typeInstvar:  #superclass ofClassWithLookup:   Behavior "
-		"self halt."
-		^ self.
-		].
 	collector
 		handleAssignment: (rvalue := stack removeLast)
 		forTmp: offset.

@@ -1,10 +1,12 @@
 Class {
-	#name : #ExtractedTypeTest,
-	#superclass : #TestCase,
-	#category : #'RoelTyper-Tests-Tests'
+	#name : 'ExtractedTypeTest',
+	#superclass : 'TestCase',
+	#category : 'RoelTyper-Tests-Tests',
+	#package : 'RoelTyper-Tests',
+	#tag : 'Tests'
 }
 
-{ #category : #tests }
+{ #category : 'tests' }
 ExtractedTypeTest >> testFlattenLinks [
 
 	|et1 et2|

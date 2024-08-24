@@ -4,7 +4,7 @@
 Class {
 	#name : #PharoTypeCollector,
 	#superclass : #TypeCollector,
-	#category : #'RoelTyper-Pharo'
+	#category : 'RoelTyper-Pharo'
 }
 
 { #category : #heuristics }

@@ -1,7 +1,7 @@
 Class {
 	#name : #AbstractMerger,
 	#superclass : #TypeMerger,
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core'
 }
 
 { #category : #public }

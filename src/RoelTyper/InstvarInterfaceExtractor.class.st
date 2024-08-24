@@ -26,7 +26,7 @@ Class {
 		'blockTraversal',
 		'blockArgs'
 	],
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core'
 }
 
 { #category : #'instruction decoding' }
@@ -95,7 +95,7 @@ InstvarInterfaceExtractor >> jump: delta [
 	currentPC := self input pc.
 	delta < 1 ifTrue: [^self].
 	self saveStacks
-		at: currentPC + delta
+		at: input -> (currentPC + delta)
 		put: stack copy.
 	stack := OrderedCollection new.
 	
@@ -117,7 +117,7 @@ InstvarInterfaceExtractor >> jump: delta if: condition [
 	self pop.	"receiver of ifTrue or ifFalse, according to condition"
 	delta < 1 ifTrue: [^self].
 	self saveStacks
-		at: self input pc + delta
+		at: input -> (self input pc + delta)
 		put:
 			(stack copy)
 ]
@@ -298,15 +298,12 @@ InstvarInterfaceExtractor >> readBlock: block copied: count [
 
 { #category : #private }
 InstvarInterfaceExtractor >> reloadStack [
-	stack isNil
-		ifTrue:
-			[stack := self saveStacks
-				at: self input pc
-				ifAbsent: [initialStack copy].
-			^self].
+
 	stack := self saveStacks
-		at: self input pc
-		ifAbsent: [stack]
+		at: input -> self input pc
+		ifAbsent: [ stack isNil
+			ifTrue: [initialStack copy]. 
+		^ self ]
 ]
 
 { #category : #private }

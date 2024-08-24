@@ -5,7 +5,7 @@ Class {
 		'lives',
 		'compiledMethod'
 	],
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core'
 }
 
 { #category : #'instance creation' }

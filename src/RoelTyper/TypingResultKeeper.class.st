@@ -23,7 +23,7 @@ Class {
 		'timeTaken',
 		'typeResults'
 	],
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core'
 }
 
 { #category : #'instance creation' }
