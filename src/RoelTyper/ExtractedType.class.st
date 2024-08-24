@@ -1,16 +1,18 @@
 Class {
-	#name : #ExtractedType,
-	#superclass : #AbstractType,
+	#name : 'ExtractedType',
+	#superclass : 'AbstractType',
 	#instVars : [
 		'interface',
 		'assignments',
 		'extractedTypes',
 		'links'
 	],
-	#category : 'RoelTyper-Core'
+	#category : 'RoelTyper-Core',
+	#package : 'RoelTyper',
+	#tag : 'Core'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 ExtractedType class >> forInstvar: iv inClass: aClass interface: selectorCollection assignments: classCollection [
 	^(self
 		forInstvar: iv
@@ -19,7 +21,7 @@ ExtractedType class >> forInstvar: iv inClass: aClass interface: selectorCollect
 		assignments: classCollection
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedType class >> mergerClass [
 	"Still experimenting with different mergers. So for the moment I uncomment things to experiment with."
 
@@ -29,39 +31,40 @@ ExtractedType class >> mergerClass [
 	^AssignmentsFirstMerger
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> addAssignment: anObject [
+	
 	(self assignments includes: anObject)
-		ifFalse: [self assignments add: anObject]
+		ifFalse: [ self assignments add: anObject ]
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> addLinkedExtractedType: anExtractedType [
 	 links add: anExtractedType liveExtractType
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> addReverseLinkedExtractedType: anExtractedType [
 	links add: anExtractedType liveExtractType.
 	anExtractedType liveExtractType  addLinkedExtractedType: self
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> addSend: anObject [
 	self interface add: anObject
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> assignments [
 	^assignments
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> basicExtractedTypes [
 	^extractedTypes
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedType >> cleanedAssignments [
 	| assigns |
 	assigns := self assignments copy.
@@ -74,12 +77,12 @@ ExtractedType >> cleanedAssignments [
 	^assigns
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 ExtractedType >> contents [
 	^self types
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedType >> flattenLinks [
 	[links isEmpty] 
 		whileFalse: [|link|
@@ -93,7 +96,7 @@ ExtractedType >> flattenLinks [
 	
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedType >> foldInterfaceTypes: interfaceClasses withAssignmentTypes: assignmentClasses [
 
 	| tmp | 
@@ -109,17 +112,17 @@ ExtractedType >> foldInterfaceTypes: interfaceClasses withAssignmentTypes: assig
 		assignmentTypes: assignmentClasses
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 ExtractedType >> hasEmptyAssignments [
-	^self assignments isEmpty
+	^ self assignments isEmpty
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 ExtractedType >> hasEmptyInterface [
-	^self interface isEmpty
+	^ self interface isEmpty
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 ExtractedType >> initialize [
 	super initialize.
 	links := Set new.
@@ -128,33 +131,33 @@ ExtractedType >> initialize [
 		assignments: OrderedCollection new.
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> interface [
 	^interface
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> interface: selectorCollection assignments: classCollection [
 	interface := selectorCollection.
 	assignments := classCollection
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 ExtractedType >> isEmpty [
-	^self hasEmptyAssignments and: [self hasEmptyInterface]
+	^ self hasEmptyAssignments and: [ self hasEmptyInterface ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 ExtractedType >> isExtractedResult [
-	^true
+	^ true
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedType >> links [
 	^links
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedType >> mergeTypes [
 	self flattenLinks.
 	^self
@@ -162,15 +165,14 @@ ExtractedType >> mergeTypes [
 		withAssignmentTypes: self cleanedAssignments
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 ExtractedType >> printInterfaceAndAssigments [
-	| s |
-	s := WriteStream on: String new.
-	self printInterfaceAndAssigmentsOn: s.
-	^ s contents
+	
+	^ String streamContents: [ :s | 
+			self printInterfaceAndAssigmentsOn: s ]
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 ExtractedType >> printInterfaceAndAssigmentsOn: aStream [
 	aStream nextPutAll: 'Sends: {'.
 	self interface
@@ -188,7 +190,7 @@ ExtractedType >> printInterfaceAndAssigmentsOn: aStream [
 		cr
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 ExtractedType >> printOn: aStream [
 	aStream nextPutAll: 'ExtractedType: '.
 	self basicExtractedTypes
@@ -196,7 +198,7 @@ ExtractedType >> printOn: aStream [
 		ifNotNil: [self printTypesOn: aStream]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedType >> rootsUnderstanding: selectors [
 	"When the set of selectors is not empty, answer a set of the highest possible classes in the system that implement all the selectors. When the set of selectors is empty, return the empty set."
 
@@ -237,9 +239,9 @@ ExtractedType >> rootsUnderstanding: selectors [
 	^ nextClasses
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 ExtractedType >> types [
-	^extractedTypes
-		ifNil: [extractedTypes := self mergeTypes]
-		ifNotNil: [extractedTypes]
+	^ extractedTypes
+		ifNil: [ extractedTypes := self mergeTypes ]
+		ifNotNil: [ extractedTypes ]
 ]

@@ -1,14 +1,16 @@
 Class {
-	#name : #ExtractedTypeForBlockArg,
-	#superclass : #AbstractType,
+	#name : 'ExtractedTypeForBlockArg',
+	#superclass : 'AbstractType',
 	#instVars : [
 		'lives',
 		'compiledMethod'
 	],
-	#category : 'RoelTyper-Core'
+	#category : 'RoelTyper-Core',
+	#package : 'RoelTyper',
+	#tag : 'Core'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 ExtractedTypeForBlockArg class >> forOffset: offset ofCompiledMethod: aCompiledMethod inClass: aClass [
 	^self new
 		tempOffset: offset;
@@ -17,43 +19,45 @@ ExtractedTypeForBlockArg class >> forOffset: offset ofCompiledMethod: aCompiledM
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 ExtractedTypeForBlockArg >> asBlockArgInTypeCollector: aTypeCollector [
 	self newLive
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 ExtractedTypeForBlockArg >> compiledMethod: aCompiledMethod [
 	compiledMethod := aCompiledMethod
 ]
 
-{ #category : #'system primitives' }
+{ #category : 'system primitives' }
 ExtractedTypeForBlockArg >> doesNotUnderstand: aMessage [
-	^aMessage sendTo: self liveExtractType 
+	^ aMessage sendTo: self liveExtractType 
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 ExtractedTypeForBlockArg >> initialize [
 	super initialize.
 	lives := OrderedCollection with: (ExtractedTypeForTmp new)
 ]
 
-{ #category : #'private-accessing' }
+{ #category : 'private-accessing' }
 ExtractedTypeForBlockArg >> interface [
-	^(lives inject: Set new into: [:ord :et | ord addAll: (et interface); yourself ]) asOrderedCollection
+	^ (lives 
+			inject: Set new 
+			into: [:ord :et | ord addAll: et interface; yourself ]) asOrderedCollection
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 ExtractedTypeForBlockArg >> liveExtractType [
-	^lives last
+	^ lives last
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 ExtractedTypeForBlockArg >> newLive [
-	^lives addLast: (ExtractedTypeForTmp new)
+	^ lives addLast: ExtractedTypeForTmp new
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 ExtractedTypeForBlockArg >> printOn: aStream [
 	aStream
 		nextPutAll: 'Block arg';
@@ -69,15 +73,15 @@ ExtractedTypeForBlockArg >> printOn: aStream [
 			aStream cr ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 ExtractedTypeForBlockArg >> tempOffset: anOffset [
 	ivarName := anOffset
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 ExtractedTypeForBlockArg >> types [
-	|types|
+	| types |
 	types := IdentitySet new.
-	lives do: [:et | types addAll: (et mergeTypes)].
-	^types asOrderedCollection
+	lives do: [ :et | types addAll: et mergeTypes ].
+	^ types asOrderedCollection
 ]

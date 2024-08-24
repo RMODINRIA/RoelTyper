@@ -1,14 +1,16 @@
 Class {
-	#name : #AbstractType,
-	#superclass : #Object,
+	#name : 'AbstractType',
+	#superclass : 'Object',
 	#instVars : [
 		'ivarClass',
 		'ivarName'
 	],
-	#category : #'RoelTyper-Core'
+	#category : 'RoelTyper-Core',
+	#package : 'RoelTyper',
+	#tag : 'Core'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 AbstractType class >> forInstvar: iv inClass: aClass [
 	^ self new
 		ivarName: iv;
@@ -16,15 +18,16 @@ AbstractType class >> forInstvar: iv inClass: aClass [
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 AbstractType >> conflictingAssignmentsWith: anExtractedType [
+
 	| conflictingAssignments |
 	conflictingAssignments := anExtractedType assignments
 		reject: [ :assignment | self types includes: assignment ].
 	^ conflictingAssignments
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 AbstractType >> conflictingSelectorsWith: anExtractedType [
 	| conflictingSelectors |
 	conflictingSelectors := Dictionary new.
@@ -42,77 +45,70 @@ AbstractType >> conflictingSelectorsWith: anExtractedType [
 	^conflictingSelectors
 ]
 
-{ #category : #initialization }
-AbstractType >> initialize [
-	"Do nothing, but give subclasses the chance to override."
-
-	
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : 'accessing' }
 AbstractType >> interface [
 	^ self subclassResponsibility
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 AbstractType >> is: aClass [
-	^self isSingularType and: [self types first = aClass]
+	^ self isSingularType and: [ self types first = aClass ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 AbstractType >> isExtractedResult [
-	^self subclassResponsibility
+	^ self subclassResponsibility
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 AbstractType >> isObjectType [
 	^self isSingularType and: [self types includes: Object]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 AbstractType >> isSingularType [
-	^self types size = 1
+	^ self types size = 1
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 AbstractType >> ivarClass [
 	^ivarClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 AbstractType >> ivarClass: aClass [
 	ivarClass := aClass.
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 AbstractType >> ivarName [
 	^ivarName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 AbstractType >> ivarName: aSymbol [
 	ivarName := aSymbol
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 AbstractType >> liveExtractType [
 	^self
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 AbstractType >> printOn: aStream [
 	self printTypesOn: aStream
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 AbstractType >> printTypesOn: aStream [
 	self types
 		do: [ :each | aStream print: each ]
 		separatedBy: [ aStream nextPutAll: ' , ' ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 AbstractType >> types [
 	^self subclassResponsibility
 ]

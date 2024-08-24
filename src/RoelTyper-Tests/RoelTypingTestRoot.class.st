@@ -19,13 +19,15 @@ RoelTypingTestRoot class >> isAbstract [
 
 { #category : 'auxiliary' }
 RoelTypingTestRoot >> doForSource: src [
+
 	| m |
 	m := (Smalltalk compiler
-		source: 'gen ' , src;
-		class: self class;
-		requestor: nil;
-		failBlock: [ self error: 'Error during compilation of generated method.' ];
-		parse) generate.
+		      source: 'gen ' , src;
+		      class: self class;
+		      requestor: nil;
+		      failBlock: [
+			      self error: 'Error during compilation of generated method.' ];
+		      parse) generateMethod.
 	^ self processMethod: m
 ]
 

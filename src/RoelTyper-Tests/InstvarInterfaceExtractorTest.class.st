@@ -107,7 +107,6 @@ InstvarInterfaceExtractorTest >> emptyInterface: anArray atIndexes: indexCollect
 
 { #category : 'auxiliary' }
 InstvarInterfaceExtractorTest >> processMethod: aCompiledMethod [
-	"Fail by default. Needs to be overridden by subclasses to trigger the base testing backbone."
 
 	| collector |
 	collector := TypeCollector onClass: self class.
@@ -118,7 +117,7 @@ InstvarInterfaceExtractorTest >> processMethod: aCompiledMethod [
 	^collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testArithmetic [
 	"self run: #testArithmetic"
 
@@ -135,7 +134,7 @@ InstvarInterfaceExtractorTest >> testArithmetic [
 		in: collector
 ]
 
-{ #category : 'combined tests' }
+{ #category : 'tests - combined' }
 InstvarInterfaceExtractorTest >> testArithmeticValueSpecialisation [
 	| collector |
 	collector := self
@@ -150,7 +149,7 @@ InstvarInterfaceExtractorTest >> testArithmeticValueSpecialisation [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testArrayAssignment [
 	| collector |
 	collector := self doForSource: 'v := #(one two three)'.
@@ -159,7 +158,7 @@ InstvarInterfaceExtractorTest >> testArrayAssignment [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testBlockReturnValue [
 
 	| collector |
@@ -170,7 +169,7 @@ InstvarInterfaceExtractorTest >> testBlockReturnValue [
 	self assertSends: #() in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testBlockWithCopiedTmp [
 
 	| collector |
@@ -179,7 +178,7 @@ InstvarInterfaceExtractorTest >> testBlockWithCopiedTmp [
 	self assertSends: #( #( #w #( #do: ) ) ) in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testBlockWithWhile [
 
 	| collector |
@@ -189,7 +188,7 @@ InstvarInterfaceExtractorTest >> testBlockWithWhile [
 	self assertSends: #() in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testBlocksNested [
 
 	| collector |
@@ -203,7 +202,7 @@ InstvarInterfaceExtractorTest >> testBlocksNested [
 	self assertSends: #( #( #u #( #'~=' ) ) ) in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testCascaded1 [
 	| collector |
 	collector := self doForSource: 'x printString; size'.
@@ -212,7 +211,7 @@ InstvarInterfaceExtractorTest >> testCascaded1 [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testCascaded2 [
 	| collector |
 	collector := self doForSource: 'x printString; size; yourself'.
@@ -221,7 +220,7 @@ InstvarInterfaceExtractorTest >> testCascaded2 [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testComplicated1 [
 	| collector |
 	collector := self
@@ -252,8 +251,7 @@ InstvarInterfaceExtractorTest >> testComplicated2 [
 { #category : 'non supported' }
 InstvarInterfaceExtractorTest >> testComplicated3 [
 	"self run: #testComplicated3"
-
-	"selfdebug: #testComplicated3"
+	"self debug: #testComplicated3"
 
 	| collector |
 	collector := self
@@ -266,7 +264,7 @@ InstvarInterfaceExtractorTest >> testComplicated3 [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testEquality [
 	| collector |
 	collector := self doForSource: 'u := v = 3'.
@@ -278,7 +276,7 @@ InstvarInterfaceExtractorTest >> testEquality [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testIdentity [
 	| collector |
 	collector := self doForSource: 'u := v == 3'.
@@ -290,7 +288,7 @@ InstvarInterfaceExtractorTest >> testIdentity [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testIftrue [
 	| vSends collector |
 	collector := self doForSource: 'u := v isNil ifTrue: [1] ifFalse: [2]'.
@@ -299,13 +297,13 @@ InstvarInterfaceExtractorTest >> testIftrue [
 	self assert: (vSends includes: #isNil)
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testIndirectAssignments [
 	
 	(TypeCollector typeInstvar: #c ofClass: ASampleClass) types
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testInstanceAssignment [
 	| collector |
 	collector := self doForSource: 'w := TypeCollector new'.
@@ -314,7 +312,7 @@ InstvarInterfaceExtractorTest >> testInstanceAssignment [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testInstanceAssignmentIndirect [
 	| collector |
 	collector := self doForSource: 'self w: TypeCollector new'.
@@ -323,7 +321,7 @@ InstvarInterfaceExtractorTest >> testInstanceAssignmentIndirect [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testInstvarAssignment1 [
 	| collector |
 	collector := self
@@ -337,7 +335,7 @@ InstvarInterfaceExtractorTest >> testInstvarAssignment1 [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testInstvarAssignment2 [
 	| collector |
 	collector := self
@@ -350,7 +348,7 @@ InstvarInterfaceExtractorTest >> testInstvarAssignment2 [
 		in: collector
 ]
 
-{ #category : 'assignment tests' }
+{ #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testMetaClassAssignment [
 	| collector wAssignments wIndex wIndexRelative |
 	collector := self doForSource: 'w := TypeCollector'.
@@ -368,7 +366,7 @@ InstvarInterfaceExtractorTest >> testMetaClassAssignment [
 				yourself)
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testSelfSendWithAssignedTemp [
 	| collector |
 	collector := self
@@ -380,7 +378,7 @@ InstvarInterfaceExtractorTest >> testSelfSendWithAssignedTemp [
 	self assertSends: #() in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testSelfSendWithInstVar [
 	| collector |
 	self flag: 'should it not find out about sending #+ to var u?'.
@@ -392,7 +390,7 @@ InstvarInterfaceExtractorTest >> testSelfSendWithInstVar [
 	self assertSends: #() in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testSelfSendWithTemp [
 	| collector |
 	
@@ -404,7 +402,7 @@ InstvarInterfaceExtractorTest >> testSelfSendWithTemp [
 	self assertSends: #() in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testSuperivarAssignment [
 	| collector |
 	collector := self doForSource: '^testSelector := testSelector'.
@@ -413,7 +411,7 @@ InstvarInterfaceExtractorTest >> testSuperivarAssignment [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testSuperivarSend [
 	| collector |
 	collector := self doForSource: '^testSelector printString'.
@@ -422,7 +420,7 @@ InstvarInterfaceExtractorTest >> testSuperivarSend [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testThisProcess [
 
 	| collector |
@@ -430,7 +428,7 @@ InstvarInterfaceExtractorTest >> testThisProcess [
 	self assertSends: #() in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testblockindirectxy [
 	| collector |
 	collector := self
@@ -440,7 +438,7 @@ InstvarInterfaceExtractorTest >> testblockindirectxy [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testblockuwx [
 	| collector |
 	collector := self
@@ -450,7 +448,7 @@ InstvarInterfaceExtractorTest >> testblockuwx [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testblockwithargs [
 	| collector |
 	collector := self
@@ -460,7 +458,7 @@ InstvarInterfaceExtractorTest >> testblockwithargs [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testblockxy [
 	| collector |
 	collector := self doForSource: '^self xyw ifTrue: [x] ifFalse: [y]'.
@@ -469,7 +467,7 @@ InstvarInterfaceExtractorTest >> testblockxy [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testblockyab [
 	" #'ifTrue:ifFalse: is sent to a, but is not Captured by the extractor"
 
@@ -480,7 +478,7 @@ InstvarInterfaceExtractorTest >> testblockyab [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testindirectx [
 	| collector |
 	collector := self doForSource: '^self x printString'.
@@ -489,7 +487,7 @@ InstvarInterfaceExtractorTest >> testindirectx [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testu [
 	| collector |
 	collector := self doForSource: '^u'.
@@ -498,7 +496,7 @@ InstvarInterfaceExtractorTest >> testu [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testuxyw [
 	| collector |
 	collector := self
@@ -508,7 +506,7 @@ InstvarInterfaceExtractorTest >> testuxyw [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testxyw [
 	| collector |
 	collector := self
@@ -522,7 +520,7 @@ InstvarInterfaceExtractorTest >> testxyw [
 		in: collector
 ]
 
-{ #category : 'send tests' }
+{ #category : 'tests - message sends' }
 InstvarInterfaceExtractorTest >> testzuv [
 	| collector |
 	collector := self doForSource: '^u ~= z or: [u = v]'.

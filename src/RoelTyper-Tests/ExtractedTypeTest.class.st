@@ -7,9 +7,9 @@ Class {
 }
 
 { #category : 'tests' }
-ExtractedTypeTest >> testFlattenLinks [
+ExtractedTypeTest >> testFlattenLinksSmokeTest [
 
-	|et1 et2|
+	| et1 et2 |
 	et1 := ExtractedType new.
 	et2 := ExtractedType new.
 	et1 addReverseLinkedExtractedType: et2.

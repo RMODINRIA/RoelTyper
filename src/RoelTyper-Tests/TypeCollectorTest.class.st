@@ -6,7 +6,7 @@ Class {
 	#tag : 'Tests'
 }
 
-{ #category : 'typing tests' }
+{ #category : 'tests - typing' }
 TypeCollectorTest >> methodWithTmpInBlock: anObject [
 	|some fancy variables|
 	some := 1.
@@ -29,7 +29,7 @@ TypeCollectorTest >> processMethod: aCompiledMethod [
 ]
 
 { #category : 'tests' }
-TypeCollectorTest >> testBlockTemps [
+TypeCollectorTest >> testBlockTempsSmokeTest [
 	"tests for problem described in TypeCollector>>#handleAssignment:forTmp:"
 
 	| collector |
@@ -42,20 +42,20 @@ TypeCollectorTest >> testBlockTemps [
 '
 ]
 
-{ #category : 'typing tests' }
+{ #category : 'tests - typing' }
 TypeCollectorTest >> testOnBehavior [
 
 	self shouldnt: (TypeCollector typeInstvar:  #'superclass' ofClassWithLookup: Behavior) raise: Error
 ]
 
-{ #category : 'typing tests' }
+{ #category : 'tests - typing' }
 TypeCollectorTest >> testOnTmpVarContainedInBlock [
 
 	self shouldnt: (TypeCollector typeTmpsIn: (self class >> #methodWithTmpInBlock:)
 		ofClass: self class) raise: Error
 ]
 
-{ #category : 'typing tests' }
+{ #category : 'tests - typing' }
 TypeCollectorTest >> testPoint [
 	| types xTypes yTypes |
 	types := TypeCollector typeInstvarsOfClass: Point.

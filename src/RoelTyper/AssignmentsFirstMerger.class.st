@@ -1,10 +1,12 @@
 Class {
-	#name : #AssignmentsFirstMerger,
-	#superclass : #TypeMerger,
-	#category : 'RoelTyper-Core'
+	#name : 'AssignmentsFirstMerger',
+	#superclass : 'TypeMerger',
+	#category : 'RoelTyper-Core',
+	#package : 'RoelTyper',
+	#tag : 'Core'
 }
 
-{ #category : #public }
+{ #category : 'public' }
 AssignmentsFirstMerger >> mergeInterfaceTypes: interfaceTypeCollection assignmentTypes: assignmentTypesCollection [
 	"interfaceTypes is a set of trees of types reconstructed by looking at the interfaces.
 	assignmentTypes is a set of trees of types reconstructed by looking at the assignments.

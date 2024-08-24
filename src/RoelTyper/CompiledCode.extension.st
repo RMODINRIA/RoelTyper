@@ -1,6 +1,6 @@
-Extension { #name : #CompiledCode }
+Extension { #name : 'CompiledCode' }
 
-{ #category : #'*RoelTyper' }
+{ #category : '*RoelTyper' }
 CompiledCode >> inspectionBlocks [
 
 	<inspectorPresentationOrder: 25 title: 'Blocks'>

@@ -1,37 +1,39 @@
 Class {
-	#name : #PharoInstvarInterfaceExtractor,
-	#superclass : #InstvarInterfaceExtractor,
+	#name : 'PharoInstvarInterfaceExtractor',
+	#superclass : 'InstvarInterfaceExtractor',
 	#instVars : [
 		'blockTempsMapping',
 		'blocksLimits'
 	],
-	#category : 'RoelTyper-Pharo'
+	#category : 'RoelTyper-Pharo',
+	#package : 'RoelTyper',
+	#tag : 'Pharo'
 }
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> blockMapping [
 	^ blockTempsMapping last
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> blocksArgsBySize [
 	^ blocksLimits ifNil: [ blocksLimits := OrderedCollection new ]
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> blocksDecrement [
 
 		blocksLimits := blocksLimits select: [:e | (e = input pc) ifTrue: [self removeBlockMapping.  false] ifFalse: [true] ]
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> callPrimitive: aPrimitive [
 
 	stack add: PrimitiveFailed
 ]
 
-{ #category : #extracting }
+{ #category : 'extracting' }
 PharoInstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector [
 	method := m.
 	saveStacks := Dictionary new.
@@ -52,55 +54,55 @@ PharoInstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector
 			]
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> inABlock [
 	^ blockTempsMapping isNotEmpty
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 PharoInstvarInterfaceExtractor >> initialize [
 	super initialize.
 	blockTempsMapping := OrderedCollection new.
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> methodReturnTop [
 	^self pop
 ]
 
-{ #category : #block }
+{ #category : 'block' }
 PharoInstvarInterfaceExtractor >> newBlockMapping [
 	blockTempsMapping add: OrderedCollection new.
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> popIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	"Remove Top Of Stack And Store Into Offset of Temp Vector bytecode."
 	stack removeLast
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
 	"Remove Top Of Stack And Store Into Temporary Variable bytecode."
 
 	"An empty stack => we are in a block"
-	self inABlock ifFalse: [
-	collector
-		handleAssignment: stack removeLast
-		forTmp: offset] ifTrue: [
-			
-		]
+	self inABlock 
+		ifFalse: [
+			collector
+				handleAssignment: stack removeLast
+				forTmp: offset ] 
+		ifTrue: [ ]
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushActiveProcess [
 	
 	stack add: #thisProcess
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushClosureCopyNumCopiedValues: numCopied numArgs: numArgs blockSize: blockSize [
 	self newBlockMapping.
 	self blocksArgsBySize add: blockSize + input pc - 1.
@@ -111,12 +113,12 @@ PharoInstvarInterfaceExtractor >> pushClosureCopyNumCopiedValues: numCopied numA
 	
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushConsArrayWithElements: anArray [
-	stack add: #instcreation->Array
+	stack add: #instcreation -> Array
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushFullClosure: compiledBlock numCopied: numCopied receiverOnStack: onStack ignoreOuterContext: ignore [
 	"Sista-like separately compiled closure"
 
@@ -137,18 +139,18 @@ PharoInstvarInterfaceExtractor >> pushFullClosure: compiledBlock numCopied: numC
 	self removeBlockMapping
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushNewArrayOfSize: numElements [ 
 	"Push New Array of size numElements bytecode."
 	stack addLast: #computed 
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	stack addLast: #computed
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> pushTemporaryVariable: offset [ 
 	"Push Contents Of Temporary Variable Whose Index Is the 
 	argument, offset, On Top Of Stack bytecode."
@@ -160,18 +162,18 @@ PharoInstvarInterfaceExtractor >> pushTemporaryVariable: offset [
 		ifFalse: [stack add: #temp -> offset]
 ]
 
-{ #category : #removing }
+{ #category : 'removing' }
 PharoInstvarInterfaceExtractor >> removeBlockMapping [
 	blockTempsMapping removeLast
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> send: selector numArgs: na [
 
 	^ self nativeSend: selector numArgs: na
 ]
 
-{ #category : #'instruction decoding' }
+{ #category : 'instruction decoding' }
 PharoInstvarInterfaceExtractor >> storeIntoTemporaryVariable: offset [
 	"Store Top Of Stack Into Temporary Variable Of Method bytecode."
 

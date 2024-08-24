@@ -10,9 +10,9 @@ Class {
 		'f',
 		'g'
 	],
-	#category : 'RoelTyper-Tests-Tests',
+	#category : 'RoelTyper-Tests-TestData',
 	#package : 'RoelTyper-Tests',
-	#tag : 'Tests'
+	#tag : 'TestData'
 }
 
 { #category : 'assignments links' }
