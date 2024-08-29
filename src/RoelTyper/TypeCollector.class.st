@@ -87,10 +87,26 @@ TypeCollector class >> typeInstvarsOfClass: aClass [
 ]
 
 { #category : 'instance creation' }
-TypeCollector class >> typeTmpsIn: aCompiledMethod ofClass: aClass [
-	"self typeInstvarsOfClass: Point"
+TypeCollector class >> typeTmpsIn: aCompiledMethod [
+	"self typeTmpsIn: Point>>#angleWith: ofClass: Point"
 
-	^self new typeTmpsIn: aCompiledMethod ofClass: aClass
+	^ self
+		  typeTmpsIn: aCompiledMethod
+		  ofClass: aCompiledMethod methodClass
+]
+
+{ #category : 'instance creation' }
+TypeCollector class >> typeTmpsIn: aCompiledMethod ofClass: aClass [
+	"self typeTmpsIn: Point>>#angleWith: ofClass: Point"
+
+	^ self new typeTmpsIn: aCompiledMethod ofClass: aClass
+]
+
+{ #category : 'instance creation' }
+TypeCollector class >> typeTmpsInSelector: aSelector ofClass: aClass [
+	"self typeTmpsIn: Point>>#angleWith: ofClass: Point"
+
+	^ self typeTmpsIn: aClass >> aSelector ofClass: aClass
 ]
 
 { #category : 'instance creation' }
