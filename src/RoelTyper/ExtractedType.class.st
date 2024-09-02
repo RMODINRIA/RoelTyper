@@ -33,9 +33,8 @@ ExtractedType class >> mergerClass [
 
 { #category : 'private-accessing' }
 ExtractedType >> addAssignment: anObject [
-	
-	(self assignments includes: anObject)
-		ifFalse: [ self assignments add: anObject ]
+
+	self assignments addIfNotPresent: anObject
 ]
 
 { #category : 'private-accessing' }
