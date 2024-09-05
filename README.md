@@ -31,3 +31,4 @@ Note that you can replace the #v1.x.x by a branch as #master or #development or 
 |-------------	|---------------------------	|
 | 1.x.x       	| Pharo 70						|
 | Dev       	| Pharo 70						|
+| master       	| Pharo 61 - 12					|
