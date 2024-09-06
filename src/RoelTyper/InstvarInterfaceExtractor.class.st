@@ -79,7 +79,7 @@ InstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector [
 			input interpretNextInstructionFor: self]
 ]
 
-{ #category : 'private' }
+{ #category : 'initialization' }
 InstvarInterfaceExtractor >> initialize [
 	super initialize.
 	blockTraversal := false.
@@ -89,6 +89,12 @@ InstvarInterfaceExtractor >> initialize [
 { #category : 'private' }
 InstvarInterfaceExtractor >> input [
 	^input
+]
+
+{ #category : 'testing' }
+InstvarInterfaceExtractor >> isTempKey: aSymbol [
+
+	^ aSymbol = #temp
 ]
 
 { #category : 'instruction decoding' }
@@ -156,38 +162,30 @@ InstvarInterfaceExtractor >> methodReturnTop [
 ]
 
 { #category : 'opcodes-control' }
-InstvarInterfaceExtractor >> nativeSend: selector numArgs: na [ 
+InstvarInterfaceExtractor >> nativeSend: selector numArgs: na [
+
 	| receiver args |
 	args := stack removeLast: na.
 	receiver := stack removeLast.
-	receiver isInteger 
-		ifTrue: 
-			[ collector 
-				addSend: selector
-				to: receiver ]
-		ifFalse: 
-			[ receiver isVariableBinding ifTrue: 
-				[ receiver key = #temp 
-					ifTrue: 
-						[ collector 
-							addSend: selector
-							toTmp: receiver value ]
-					ifFalse: 
-						[ receiver key = #return ifTrue: 
-							[ collector 
+	receiver isInteger
+		ifTrue: [ collector addSend: selector to: receiver ]
+		ifFalse: [
+			receiver isVariableBinding ifTrue: [
+				(self isTempKey: receiver key)
+					ifTrue: [ collector addSend: selector toTmp: receiver value ]
+					ifFalse: [
+						receiver key = #return ifTrue: [
+							collector
 								addSend: selector
 								onReturnOfSelfMethod: receiver value ] ] ] ].
-	(receiver = #self and: [ collector theClass methodDict includesKey: selector ]) ifTrue: 
-		[ args doWithIndex: 
-			[ :arg :index | 
-			collector 
+	(receiver = #self and: [
+		 collector theClass methodDict includesKey: selector ]) ifTrue: [
+		args doWithIndex: [ :arg :index |
+			collector
 				handleAssignment: arg
 				forTmp: index - 1
 				in: collector theClass >> selector ] ].
-	stack add: (collector 
-			pushSendOf: selector
-			to: receiver
-			args: args)
+	stack add: (collector pushSendOf: selector to: receiver args: args)
 ]
 
 { #category : 'opcodes-data movement' }

@@ -67,17 +67,34 @@ TypeCollectorTest >> testPoint [
 
 { #category : 'tests' }
 TypeCollectorTest >> testPrimitive [
-	"tests for problem described in PharoInstvarInterfaceExtractor>>#storeIntoTemporaryVariable:"
 
 	| collector tmpAssignments |
 	collector := self doForSource: '<primitive: 70 error: tmp>'.
 	self
 		assertCollection:
-			(collector packagedResults asDictionary at: '_gen>>return')
-				assignments
+		(collector packagedResults asDictionary at: '_gen>>^') assignments
 		hasSameElements: { self class }.
 	tmpAssignments := (collector packagedResults asDictionary at:
-		                   '_gen>>tmp1') assignments.
+		                   '_gen>>tmp') assignments.
 	self assert: tmpAssignments size equals: 1.
 	self assert: (tmpAssignments anyOne inheritsFrom: Exception)
+]
+
+{ #category : 'tests' }
+TypeCollectorTest >> testPrimitiveAndTemp [
+
+	| collector results |
+	collector := TypeCollector new.
+	results := collector
+		           typeTmpsIn: ASampleClass >> #primitive
+		           ofClass: ASampleClass.
+	self
+		assertCollection: results keys
+		hasSameElements: #( #'^' #tmpPrimitive #tmpRegular ).
+	self
+		assertCollection: (results at: #tmpPrimitive) assignments
+		hasSameElements: { PrimitiveFailed }.
+	self
+		assertCollection: (results at: #tmpRegular) assignments
+		hasSameElements: { SmallFloat64 }
 ]

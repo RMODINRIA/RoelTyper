@@ -29,5 +29,6 @@ Note that you can replace the #v1.x.x by a branch as #master or #development or 
 
 | Version 		| Compatible Pharo versions 	| 
 |-------------	|---------------------------	|
-| 1.x.x       	| Pharo 70						|
-| Dev       	| Pharo 70						|
+| 1.x.x       	| Pharo 7.0						|
+| Dev       	| Pharo 7.0						|
+| master       	| Pharo 6.1 - 12.0				|

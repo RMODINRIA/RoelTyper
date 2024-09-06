@@ -87,10 +87,26 @@ TypeCollector class >> typeInstvarsOfClass: aClass [
 ]
 
 { #category : 'instance creation' }
-TypeCollector class >> typeTmpsIn: aCompiledMethod ofClass: aClass [
-	"self typeInstvarsOfClass: Point"
+TypeCollector class >> typeTmpsIn: aCompiledMethod [
+	"self typeTmpsIn: Point>>#angleWith: ofClass: Point"
 
-	^self new typeTmpsIn: aCompiledMethod ofClass: aClass
+	^ self
+		  typeTmpsIn: aCompiledMethod
+		  ofClass: aCompiledMethod methodClass
+]
+
+{ #category : 'instance creation' }
+TypeCollector class >> typeTmpsIn: aCompiledMethod ofClass: aClass [
+	"self typeTmpsIn: Point>>#angleWith: ofClass: Point"
+
+	^ self new typeTmpsIn: aCompiledMethod ofClass: aClass
+]
+
+{ #category : 'instance creation' }
+TypeCollector class >> typeTmpsInSelector: aSelector ofClass: aClass [
+	"self typeTmpsIn: Point>>#angleWith: ofClass: Point"
+
+	^ self typeTmpsIn: aClass >> aSelector ofClass: aClass
 ]
 
 { #category : 'instance creation' }
@@ -167,11 +183,13 @@ TypeCollector >> addLocalTypingResultsFor: aCompiledCode [
 
 	localTypingResults
 		at: aCompiledCode
-		put: ((1 to: aCompiledCode numTemps + 1) collect: [ :each |
-				 ExtractedTypeForTmp
-					 forTmpOffset: each
-					 ofCompiledMethod: aCompiledCode
-					 inClass: aCompiledCode methodClass ]) asArray
+		put:
+			((1 to: aCompiledCode sourceNode allOwnTempNames size + 1)
+				 collect: [ :each |
+					 ExtractedTypeForTmp
+						 forTmpOffset: each
+						 ofCompiledMethod: aCompiledCode
+						 inClass: aCompiledCode methodClass ]) asArray
 ]
 
 { #category : 'adding' }
@@ -235,6 +253,18 @@ TypeCollector >> currentExtractedMethod: anObject [
 	self addLocalTypingResultsFor: anObject
 ]
 
+{ #category : 'public-typing' }
+TypeCollector >> extractClass: aClass [
+
+	| extractor |
+	self onClass: aClass.
+	extractor := self newExtractor.
+
+	aClass selectorsAndMethodsDo: [ :sel :method |
+		currentExtractedMethod := method.
+		extractor extractInterfacesFrom: method addTo: self ]
+]
+
 { #category : 'adding' }
 TypeCollector >> extractedTypeForReturnInMethod: aCompiledMethod [
 	^(localTypingResults at: aCompiledMethod) last
@@ -267,42 +297,30 @@ TypeCollector >> handleAssignment: val for: index [
 ]
 
 { #category : 'heuristics' }
-TypeCollector >> handleAssignment: val forTmp: index [ 
-	"Cannot use ifNotNil: with argument in Squeak, so use a temporary instead."
-	
-	(localTypingResults at: currentExtractedMethod) size <= index ifTrue: [
-		self flag: 'bug here. For now just do nothing. uncomment the halt to run the example or make the test fail'.
-		"this case seems to be broken for now. "
-		"Try for example: 
-			TypeCollector typeInstvar:  #lastStepMessage ofClassWithLookup:  WorldState 
-		or run TypeCollectorTest>>#testBlockTemps"
-		"Problem seems to be in fact that the temp is on a block level, not the method and collector only has slots for method-level temps"
-		"self halt."
-		^ self.
-		].
-	
-	val isInteger 
-		ifTrue: 
-			[ self 
-				withTranslatedIndex: val
-				do: 
-					[ :idx | 
-					((localTypingResults at: currentExtractedMethod) at: index + 1) addReverseLinkedExtractedType: (typingResults at: idx) ] ]
-		ifFalse: 
-			[ (val isVariableBinding and: [ val key = #temp ]) 
-				ifTrue: 
-					[ ((localTypingResults at: currentExtractedMethod ) at: index + 1) addReverseLinkedExtractedType: ((localTypingResults at: currentExtractedMethod) at: val value + 1) ]
-				ifFalse: 
-					[ (val isVariableBinding and: [ val key = #return ]) 
-						ifTrue: 
-							[ ((localTypingResults at: currentExtractedMethod ) at: index + 1) addReverseLinkedExtractedType: (self extractedTypeForReturnInMethod: theClass >> val value) ]
+TypeCollector >> handleAssignment: val forTmp: index [
+
+	val isInteger
+		ifTrue: [
+			self withTranslatedIndex: val do: [ :idx |
+				((localTypingResults at: currentExtractedMethod) at: index + 1)
+					addReverseLinkedExtractedType: (typingResults at: idx) ] ]
+		ifFalse: [
+			(val isVariableBinding and: [ val key = #temp ])
+				ifTrue: [
+					((localTypingResults at: currentExtractedMethod) at: index + 1)
+						addReverseLinkedExtractedType:
+						((localTypingResults at: currentExtractedMethod) at:
+							 val value + 1) ]
+				ifFalse: [
+					(val isVariableBinding and: [ val key = #return ])
+						ifTrue: [
+							((localTypingResults at: currentExtractedMethod) at: index + 1)
+								addReverseLinkedExtractedType:
+								(self extractedTypeForReturnInMethod: theClass >> val value) ]
 						ifFalse: [
-							 (val isVariableBinding and: [ val key = #blockArg ]) 
-							ifFalse: [(self assignmentTypeOf: val) ifNotNil: 
-						[ :result | 
-						self 
-							addAssignment: result
-							toTmp: index ] ] ]]]
+							(val isVariableBinding and: [ val key = #blockArg ]) ifFalse: [
+								(self assignmentTypeOf: val) ifNotNil: [ :result |
+									self addAssignment: result toTmp: index ] ] ] ] ]
 ]
 
 { #category : 'heuristics' }
@@ -380,37 +398,45 @@ TypeCollector >> onClass: aClass [
 
 { #category : 'accessing' }
 TypeCollector >> packagedResults [
+
 	| results |
 	results := IdentityDictionary new.
-	instVars size - theClass instVarNames size + 1
-		to: instVars size
-		do:
-			[ :index | 
-			results
-				at: (instVars at: index)
-				put: (self typingResults at: index)].
-	localTypingResults keysAndValuesDo: [:cm :arr | | prefix prefixTmp|
-		prefix := '_',cm selector,'>>'.
-		prefixTmp := prefix, 'tmp'.
-		1 to: arr size - 1 do: [:i | results at: ( prefixTmp, i printString) put: (arr at: i)].
-		results at: (prefix, 'return') put: (arr last).
-		 ].
-	 
-	^results
+	instVars size - theClass instVarNames size + 1 to: instVars size do: [
+		:index |
+		results at: (instVars at: index) put: (self typingResults at: index) ].
+	localTypingResults keysDo: [ :eachMethod |
+		| prefix |
+		prefix := '_' , eachMethod selector , '>>'.
+		(self packagedResultsForCompiledMethod: eachMethod)
+			keysAndValuesDo: [ :eachName :eachExtractedType |
+				results at: (prefix , eachName) asSymbol put: eachExtractedType ] ].
+
+	^ results
 ]
 
 { #category : 'accessing' }
 TypeCollector >> packagedResultsForCompiledMethod: aCompiledMethod [
-	| results arr tmpNames numberOfTemporaryVariables |
+
+	| results arr i |
 	results := IdentityDictionary new.
-	arr := (localTypingResults at: aCompiledMethod).
-	tmpNames := [aCompiledMethod methodNode tempNames] on: Error do: [aCompiledMethod tempNames].
-	
-	"Note we are here voluntary excluding temporary variables that may be contained in a block contained in the compiled method. This has to be fixed somehow"
-	numberOfTemporaryVariables := (arr size - 1) min: tmpNames size.
-	1 to: numberOfTemporaryVariables do: [:i | results at: (tmpNames at: i) put: (arr at: i)].
-	results at: ('^') put: arr last.	 
-	^results
+	arr := localTypingResults at: aCompiledMethod.
+
+	i := 0.
+
+	aCompiledMethod sourceNode allOwnTempNamesByOwners withIndexDo: [
+		:ownerWithListOfVarNames
+		:methodOrBlockIndex |
+		| prefix |
+		prefix := methodOrBlockIndex = 1
+			          ifTrue: [ '' ]
+			          ifFalse: [
+			          '_block' , (methodOrBlockIndex - 1) asString , '->' ].
+		ownerWithListOfVarNames value do: [ :eachVarName |
+			i := i + 1.
+			results at: (prefix , eachVarName) asSymbol put: (arr at: i) ] ].
+	results at: #'^' put: arr last.
+
+	^ results
 ]
 
 { #category : 'heuristics' }
@@ -497,32 +523,16 @@ TypeCollector >> tryUsing: receiver for: selector ifNotUse: aClass [
 
 { #category : 'public-typing' }
 TypeCollector >> typeInstvarsOfClass: aClass [
-	| extractor|
-	self onClass: aClass.
-	extractor := self newExtractor.
-	
-	aClass selectorsAndMethodsDo:
-			[:sel :method |
-			currentExtractedMethod := method. 
-			extractor
-				extractInterfacesFrom: method
-				addTo: self].
-	^self packagedResults
+
+	self extractClass: aClass.
+	^ self packagedResults
 ]
 
 { #category : 'public-typing' }
 TypeCollector >> typeTmpsIn: aCompiledMethod ofClass: aClass [
-	| extractor|
-	self onClass: aClass.
-	extractor := self newExtractor.
-	
-	aClass selectorsAndMethodsDo:
-			[:sel :method |
-			currentExtractedMethod := method. 
-			extractor
-				extractInterfacesFrom: method
-				addTo: self].
-	^self packagedResultsForCompiledMethod: aCompiledMethod
+
+	self extractClass: aClass.
+	^ self packagedResultsForCompiledMethod: aCompiledMethod
 ]
 
 { #category : 'accessing' }

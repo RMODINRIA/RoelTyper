@@ -28,7 +28,7 @@ InstvarInterfaceExtractorTest >> add1To: arg [
 InstvarInterfaceExtractorTest >> assertAssignments: description in: collector [
 	| emptyIndexes ivarName ivarInterface extractedInterface ivarIndex anArray |
 	anArray := collector typingResults.
-	emptyIndexes := (1 to: self class allInstVarNames size) asOrderedCollection.
+	emptyIndexes := (1 to: self mainTestClass allInstVarNames size) asOrderedCollection.
 	description
 		do:
 			[:desc | 
@@ -50,7 +50,7 @@ InstvarInterfaceExtractorTest >> assertAssignments: description in: collector [
 InstvarInterfaceExtractorTest >> assertSends: description in: collector [
 	| emptyIndexes ivarName ivarInterface extractedInterface ivarIndex anArray |
 	anArray := collector typingResults.
-	emptyIndexes := (1 to: self class allInstVarNames size) asOrderedCollection.
+	emptyIndexes := (1 to: self mainTestClass allInstVarNames size) asOrderedCollection.
 	description
 		do:
 			[:desc | 
@@ -72,7 +72,7 @@ InstvarInterfaceExtractorTest >> assertSends: description in: collector [
 InstvarInterfaceExtractorTest >> denyAssignments: description in: collector [
 	| emptyIndexes ivarName ivarInterface extractedInterface ivarIndex anArray |
 	anArray := collector typingResults.
-	emptyIndexes := (1 to: self class allInstVarNames size) asOrderedCollection.
+	emptyIndexes := (1 to: self mainTestClass allInstVarNames size) asOrderedCollection.
 	description
 		do:
 			[:desc | 
@@ -105,11 +105,17 @@ InstvarInterfaceExtractorTest >> emptyInterface: anArray atIndexes: indexCollect
 		do: [:index | self assert: (anArray at: index) hasEmptyInterface]
 ]
 
+{ #category : 'constants' }
+InstvarInterfaceExtractorTest >> mainTestClass [
+
+	^ InstvarInterfaceExtractorTest
+]
+
 { #category : 'auxiliary' }
 InstvarInterfaceExtractorTest >> processMethod: aCompiledMethod [
 
 	| collector |
-	collector := TypeCollector onClass: self class.
+	collector := TypeCollector onClass: self mainTestClass.
 	collector currentExtractedMethod: aCompiledMethod.
 	TypeCollector new newExtractor
 		extractInterfacesFrom: aCompiledMethod
@@ -350,20 +356,165 @@ InstvarInterfaceExtractorTest >> testInstvarAssignment2 [
 
 { #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testMetaClassAssignment [
+
 	| collector wAssignments wIndex wIndexRelative |
 	collector := self doForSource: 'w := TypeCollector'.
-	wIndex := collector absoluteIndexForVar: #w.	"Absolute"
-	wIndexRelative := wIndex
-		- (self class allInstVarNames size - self class instVarNames size).
+	wIndex := collector absoluteIndexForVar: #w. "Absolute"
+	wIndexRelative := wIndex - (self mainTestClass allInstVarNames size
+	                   - self mainTestClass instVarNames size).
 	wAssignments := collector assignmentsTo: #w.
 	self assert: wAssignments size equals: 1.
 	self assert: (wAssignments includes: TypeCollector class).
 	self
 		emptyAssigment: collector typingResults
 		atIndexes:
-			(((1 to: self class instVarNames size) asOrderedCollection)
-				remove: wIndexRelative;
-				yourself)
+			((1 to: self mainTestClass instVarNames size) asOrderedCollection
+				 remove: wIndexRelative;
+				 yourself)
+]
+
+{ #category : 'tests - message sends' }
+InstvarInterfaceExtractorTest >> testNestedBlocksComplex [
+
+	| collector results |
+	collector := TypeCollector new.
+	results := collector
+		           typeTmpsIn: ASampleClass >> #nestedBlocksComplex:
+		           ofClass: ASampleClass.
+	self
+		assertCollection: results keys
+		hasSameElements:
+			#( #'^' #mArg #mTemp1 #mTemp2 #mTemp3 #'_block1->b1Arg'
+			   #'_block1->b1Temp' #'_block2->b2Temp1Shadowed'
+			   #'_block2->b2Temp2' #'_block3->b2b1Arg' #'_block3->b2b1Temp'
+			   #'_block3->b2Temp1Shadowed' ).
+	self
+		assertCollection: (results at: #'^') assignments
+		hasSameElements: { ASampleClass }.
+	self
+		assertCollection: (results at: #mArg) assignments
+		hasSameElements: { Array }.
+	self
+		assertCollection: (results at: #mArg) interface
+		hasSameElements: { #asArray }.
+	self
+		assertCollection: (results at: #mTemp1) assignments
+		hasSameElements: { SmallInteger }.
+	self
+		assertCollection: (results at: #mTemp1) interface
+		includesAll: { #lastDigit. #+ }.
+	self
+		assertCollection: (results at: #mTemp2) assignments
+		hasSameElements: { LargePositiveInteger }.
+	self
+		assertCollection: (results at: #mTemp2) interface
+		hasSameElements: { #primeFactors. #noMask: }.
+	self
+		assertCollection: (results at: #mTemp3) assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #mTemp3) interface
+		hasSameElements: { #- }.
+	self
+		assertCollection: (results at: #'_block1->b1Arg') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block1->b1Arg') interface
+		hasSameElements: { #isInfix }.
+	self
+		assertCollection: (results at: #'_block1->b1Temp') assignments
+		hasSameElements: { ByteString }.
+	self
+		assertCollection: (results at: #'_block1->b1Temp') interface
+		hasSameElements: { #capitalized }.
+	self
+		assertCollection:
+		(results at: #'_block2->b2Temp1Shadowed') assignments
+		hasSameElements: { Character }.
+	self
+		assertCollection:
+		(results at: #'_block2->b2Temp1Shadowed') interface
+		hasSameElements: { #digitValue }.
+	self
+		assertCollection: (results at: #'_block2->b2Temp2') assignments
+		hasSameElements: { BlockClosure }.
+	self
+		assertCollection: (results at: #'_block2->b2Temp2') interface
+		hasSameElements: { #value }.
+	self
+		assertCollection: (results at: #'_block3->b2b1Arg') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block3->b2b1Arg') interface
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block3->b2b1Temp') assignments
+		hasSameElements: { Set }.
+	self
+		assertCollection: (results at: #'_block3->b2b1Temp') interface
+		hasSameElements: {  }.
+	self
+		assertCollection:
+		(results at: #'_block3->b2Temp1Shadowed') assignments
+		hasSameElements: { SmallFloat64 }.
+	self
+		assertCollection:
+		(results at: #'_block3->b2Temp1Shadowed') interface
+		hasSameElements: { #asMinimalDecimalFraction }
+]
+
+{ #category : 'tests - message sends' }
+InstvarInterfaceExtractorTest >> testNestedBlocksUsingOuterTemps [
+
+	| collector results |
+	collector := TypeCollector new.
+	results := collector
+		           typeTmpsIn: ASampleClass >> #nestedBlocksUsingOuterTemps
+		           ofClass: ASampleClass.
+	self
+		assertCollection: results keys
+		hasSameElements:
+		#( #'^' #t1 #tb1 #'_block1->t2' #'_block1->tb2' #'_block2->t3' ).
+	self
+		assertCollection: (results at: #'^') assignments
+		hasSameElements: { ASampleClass }.
+	self
+		assertCollection: (results at: #t1) assignments
+		hasSameElements: { SmallFloat64 }.
+	self
+		assertCollection: (results at: #'_block1->t2') assignments
+		hasSameElements: { ByteString }.
+	self
+		assertCollection: (results at: #'_block2->t3') assignments
+		hasSameElements: { SmallInteger }
+]
+
+{ #category : 'tests - message sends' }
+InstvarInterfaceExtractorTest >> testNestedBlocksWithTemps [
+
+	| collector results |
+	collector := TypeCollector new.
+	results := collector
+		           typeTmpsIn: ASampleClass >> #nestedBlocksWithTemps
+		           ofClass: ASampleClass.
+	self
+		assertCollection: results keys
+		hasSameElements: #( #'^' #t1 #'_block1->t2' #'_block1->t3' #'_block2->t4' ).
+	self
+		assertCollection: (results at: #'^') assignments
+		hasSameElements: { ASampleClass }.
+	self
+		assertCollection: (results at: #t1) assignments
+		hasSameElements: { BlockClosure }.
+	self
+		assertCollection: (results at: #'_block1->t2') assignments
+		hasSameElements: { SmallInteger }.
+	self
+		assertCollection: (results at: #'_block1->t3') assignments
+		hasSameElements: { BlockClosure }.
+	self
+		assertCollection: (results at: #'_block2->t4') assignments
+		hasSameElements: { SmallFloat64 }
 ]
 
 { #category : 'tests - message sends' }
@@ -400,6 +551,36 @@ InstvarInterfaceExtractorTest >> testSelfSendWithTemp [
 					self add1To: m.
 				] ]'.
 	self assertSends: #() in: collector
+]
+
+{ #category : 'tests - message sends' }
+InstvarInterfaceExtractorTest >> testStreamContents [
+
+	| collector results |
+	collector := TypeCollector new.
+	results := collector
+		           typeTmpsIn: ASampleClass >> #streamContents
+		           ofClass: ASampleClass.
+	self
+		assertCollection: results keys
+		hasSameElements: #( #'^' #array #string #'_block2->stream' #'_block3->each' ).
+	self
+		assertCollection: (results at: #'^') assignments
+		hasSameElements: { ASampleClass }.
+	self
+		assertCollection: (results at: #array) interface
+		hasSameElements: { #isEmpty. #do:separatedBy: }.
+	self
+		assertCollection: (results at: #string) interface
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block2->stream') interface
+		hasSameElements: { #nextPutAll: }.
+	self
+		assertCollection: (results at: #'_block3->each') interface
+		hasSameElements: { #writeNameAndValueOn: }
+		
+	
 ]
 
 { #category : 'tests - message sends' }
