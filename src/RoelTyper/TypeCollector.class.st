@@ -253,6 +253,18 @@ TypeCollector >> currentExtractedMethod: anObject [
 	self addLocalTypingResultsFor: anObject
 ]
 
+{ #category : 'public-typing' }
+TypeCollector >> extractClass: aClass [
+
+	| extractor |
+	self onClass: aClass.
+	extractor := self newExtractor.
+
+	aClass selectorsAndMethodsDo: [ :sel :method |
+		currentExtractedMethod := method.
+		extractor extractInterfacesFrom: method addTo: self ]
+]
+
 { #category : 'adding' }
 TypeCollector >> extractedTypeForReturnInMethod: aCompiledMethod [
 	^(localTypingResults at: aCompiledMethod) last
@@ -511,32 +523,16 @@ TypeCollector >> tryUsing: receiver for: selector ifNotUse: aClass [
 
 { #category : 'public-typing' }
 TypeCollector >> typeInstvarsOfClass: aClass [
-	| extractor|
-	self onClass: aClass.
-	extractor := self newExtractor.
-	
-	aClass selectorsAndMethodsDo:
-			[:sel :method |
-			currentExtractedMethod := method. 
-			extractor
-				extractInterfacesFrom: method
-				addTo: self].
-	^self packagedResults
+
+	self extractClass: aClass.
+	^ self packagedResults
 ]
 
 { #category : 'public-typing' }
 TypeCollector >> typeTmpsIn: aCompiledMethod ofClass: aClass [
-	| extractor|
-	self onClass: aClass.
-	extractor := self newExtractor.
-	
-	aClass selectorsAndMethodsDo:
-			[:sel :method |
-			currentExtractedMethod := method. 
-			extractor
-				extractInterfacesFrom: method
-				addTo: self].
-	^self packagedResultsForCompiledMethod: aCompiledMethod
+
+	self extractClass: aClass.
+	^ self packagedResultsForCompiledMethod: aCompiledMethod
 ]
 
 { #category : 'accessing' }
