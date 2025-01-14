@@ -190,7 +190,8 @@ InstvarInterfaceExtractor >> nativeSend: selector numArgs: na [
 
 { #category : 'opcodes-data movement' }
 InstvarInterfaceExtractor >> pop [
-	stack removeLast
+
+	^ stack removeLast
 ]
 
 { #category : 'instruction decoding' }

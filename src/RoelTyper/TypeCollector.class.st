@@ -391,7 +391,7 @@ TypeCollector >> onClass: aClass [
 	typingResults := (instVars collect: [ :ivar |
 		                  ExtractedType forInstvar: ivar inClass: aClass ])
 		                 asArray.
-	localTypingResults := IdentityDictionary new.
+	localTypingResults := Dictionary new.
 	theClass selectorsAndMethodsDo: [ :sel :cm |
 		self addLocalTypingResultsFor: cm ]
 ]

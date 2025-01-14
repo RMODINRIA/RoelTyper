@@ -17,6 +17,13 @@ PharoEncoderSistaV1InstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: 
 ]
 
 { #category : 'instruction decoding' }
+PharoEncoderSistaV1InstvarInterfaceExtractor >> methodReturnTop [
+	"Return Top Of Stack bytecode."
+
+	collector addAssignmentForReturn: self pop
+]
+
+{ #category : 'instruction decoding' }
 PharoEncoderSistaV1InstvarInterfaceExtractor >> popIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	"Remove Top Of Stack And Store Into Offset of Temp Vector bytecode."
 
