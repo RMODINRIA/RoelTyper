@@ -50,6 +50,7 @@ ExtractedType >> addReverseLinkedExtractedType: anExtractedType [
 
 { #category : 'private-accessing' }
 ExtractedType >> addSend: anObject [
+
 	self interface add: anObject
 ]
 
@@ -98,17 +99,20 @@ ExtractedType >> flattenLinks [
 { #category : 'private' }
 ExtractedType >> foldInterfaceTypes: interfaceClasses withAssignmentTypes: assignmentClasses [
 
-	| tmp | 
-	assignmentClasses remove: UndefinedObject ifAbsent: [].
-	tmp:=interfaceClasses.
+	| tmp |
+	assignmentClasses remove: UndefinedObject ifAbsent: [  ].
+	tmp := interfaceClasses.
 	(assignmentClasses isEmpty and: [
-		((interface includes: #value) 
-		or: [interface includes: #value:]) and: [interfaceClasses includes: BlockClosure]]) 
-			ifTrue: [ tmp:=OrderedCollection with: BlockClosure]
-			ifFalse: [ tmp:=interfaceClasses].
-	^self class mergerClass
-		interfaceTypes: tmp
-		assignmentTypes: assignmentClasses
+		 ((interface includes: #value) or: [
+			  (interface includes: #value:) or: [ interface includes: #cull: ] ])
+			 and: [ interfaceClasses includes: BlockClosure ] ]) ifTrue: [
+		tmp := OrderedCollection streamContents: [ :s |
+			       s nextPut: BlockClosure.
+			       (interfaceClasses includes: Symbol) ifTrue: [
+				       s nextPut: Symbol ] ] ].
+	^ self class mergerClass
+		  interfaceTypes: tmp
+		  assignmentTypes: assignmentClasses
 ]
 
 { #category : 'testing' }

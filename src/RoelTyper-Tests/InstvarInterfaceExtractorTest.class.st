@@ -309,6 +309,94 @@ InstvarInterfaceExtractorTest >> testIndirectAssignments [
 	(TypeCollector typeInstvar: #c ofClass: ASampleClass) types
 ]
 
+{ #category : 'tests - message sends' }
+InstvarInterfaceExtractorTest >> testInlinedBlocks [
+
+	| collector results |
+	collector := TypeCollector new.
+	results := collector
+		           typeTmpsIn: ASampleClass >> #inlinedBlocks
+		           ofClass: ASampleClass.
+	self
+		assertCollection: results keys
+		hasSameElements:
+			#( #'^' #t1 #t2 #t3 #'_block1->t4' #'_block1->t5' #'_block1->t6'
+			   #'_block2->t7' #'_block2->t8' #'_block4->t9' #'_block4->t10'
+			   #'_block4->t11' #'_block4->t12' ).
+	self
+		assertCollection: (results at: #'^') assignments
+		hasSameElements: { Set }.
+	self
+		assertCollection: (results at: #t1) assignments
+		hasSameElements: { SmallInteger }.
+	self
+		assertCollection: (results at: #t1) interface
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #t2) assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #t3) assignments
+		hasSameElements: { Array }.
+	self
+		assertCollection: (results at: #t3) interface
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block1->t4') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block1->t4') interface
+		hasSameElements: { #> }.
+	self
+		assertCollection: (results at: #'_block1->t5') assignments
+		hasSameElements: { ByteString }.
+	self
+		assertCollection: (results at: #'_block1->t5') interface
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block1->t6') assignments
+		hasSameElements: { SmallFloat64 }.
+	self
+		assertCollection: (results at: #'_block1->t6') interface
+		hasSameElements: { #* }.
+	self
+		assertCollection: (results at: #'_block2->t7') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block2->t7') interface
+		includesAll: { #asInteger }.
+	self
+		assertCollection: (results at: #'_block2->t8') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block2->t8') interface
+		includesAll: { #asString }.
+	self
+		assertCollection: (results at: #'_block4->t9') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block4->t9') interface
+		includesAll: { #, }.
+	self
+		assertCollection: (results at: #'_block4->t10') assignments
+		hasSameElements: {  }.
+	self
+		assertCollection: (results at: #'_block4->t10') interface
+		includesAll: {  }.
+	self
+		assertCollection: (results at: #'_block4->t11') assignments
+		hasSameElements: { Character }.
+	self
+		assertCollection: (results at: #'_block4->t11') interface
+		includesAll: {  }.
+	self
+		assertCollection: (results at: #'_block4->t12') assignments
+		hasSameElements: { ByteSymbol }.
+	self
+		assertCollection: (results at: #'_block4->t12') interface
+		includesAll: {  }
+]
+
 { #category : 'tests - assignments' }
 InstvarInterfaceExtractorTest >> testInstanceAssignment [
 	| collector |
@@ -474,18 +562,31 @@ InstvarInterfaceExtractorTest >> testNestedBlocksUsingOuterTemps [
 	self
 		assertCollection: results keys
 		hasSameElements:
-		#( #'^' #t1 #tb1 #'_block1->t2' #'_block1->tb2' #'_block2->t3' ).
+			#( #'^' #ta1 #ta2 #ta3 #ta4 #'_block1->tb1' #'_block1->tb2'
+			   #'_block1->tb3' #'_block1->tb4' #'_block2->tc1' ).
 	self
 		assertCollection: (results at: #'^') assignments
 		hasSameElements: { ASampleClass }.
 	self
-		assertCollection: (results at: #t1) assignments
-		hasSameElements: { SmallFloat64 }.
-	self
-		assertCollection: (results at: #'_block1->t2') assignments
+		assertCollection: (results at: #ta2) assignments
 		hasSameElements: { ByteString }.
 	self
-		assertCollection: (results at: #'_block2->t3') assignments
+		assertCollection: (results at: #ta3) assignments
+		hasSameElements: { SmallFloat64 }.
+	self
+		assertCollection: (results at: #ta4) assignments
+		hasSameElements: { BlockClosure }.
+	self
+		assertCollection: (results at: #'_block1->tb1') assignments
+		hasSameElements: { BlockClosure }.
+	self
+		assertCollection: (results at: #'_block1->tb3') assignments
+		hasSameElements: { Character }.
+	self
+		assertCollection: (results at: #'_block1->tb4') assignments
+		hasSameElements: { Date }.
+	self
+		assertCollection: (results at: #'_block2->tc1') assignments
 		hasSameElements: { SmallInteger }
 ]
 

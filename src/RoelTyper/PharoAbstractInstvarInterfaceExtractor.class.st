@@ -34,18 +34,18 @@ PharoAbstractInstvarInterfaceExtractor class >> forEncoder: aBytecodeEncoder [
 	^ (self classForEncoder: aBytecodeEncoder) new
 ]
 
-{ #category : 'block' }
+{ #category : 'blocks' }
 PharoAbstractInstvarInterfaceExtractor >> blockMapping [
 	^ blockTempsMapping last
 ]
 
-{ #category : 'instruction decoding' }
+{ #category : 'blocks' }
 PharoAbstractInstvarInterfaceExtractor >> blockMappingNotFoundFor: offset [
 
 	^ self error: 'Could not find temp at offset ' , offset asString
 ]
 
-{ #category : 'block' }
+{ #category : 'blocks' }
 PharoAbstractInstvarInterfaceExtractor >> blocksDecrement [
 	"do nothing"
 
@@ -76,7 +76,7 @@ PharoAbstractInstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeC
 		self blocksDecrement ]
 ]
 
-{ #category : 'block' }
+{ #category : 'blocks' }
 PharoAbstractInstvarInterfaceExtractor >> inABlock [
 	^ blockTempsMapping isNotEmpty
 ]
@@ -100,7 +100,7 @@ PharoAbstractInstvarInterfaceExtractor >> methodReturnTop [
 	^self pop
 ]
 
-{ #category : 'block' }
+{ #category : 'blocks' }
 PharoAbstractInstvarInterfaceExtractor >> newBlockMapping [
 	blockTempsMapping add: OrderedCollection new.
 	
@@ -145,16 +145,13 @@ PharoAbstractInstvarInterfaceExtractor >> pushRemoteTemp: remoteTempIndex inVect
 	"Pharo 9+
 	 Push Contents at Offset in Temp Vector bytecode."
 
-	self inABlock
-		ifTrue: [ stack add: (self blockMapping at: tempVectorIndex + 1) ]
-		ifFalse: [ stack add: #temp -> tempVectorIndex ]
+	stack add: #computed
 ]
 
 { #category : 'instruction decoding' }
 PharoAbstractInstvarInterfaceExtractor >> pushTemporaryVariable: offset [
 	"Push Contents Of Temporary Variable Whose Index Is the 
 	argument, offset, On Top Of Stack bytecode."
-
 	self inABlock
 		ifTrue: [
 			stack add: (self blockMapping
@@ -163,7 +160,7 @@ PharoAbstractInstvarInterfaceExtractor >> pushTemporaryVariable: offset [
 		ifFalse: [ stack add: #temp -> offset ]
 ]
 
-{ #category : 'removing' }
+{ #category : 'blocks' }
 PharoAbstractInstvarInterfaceExtractor >> removeBlockMapping [
 	blockTempsMapping removeLast
 ]
