@@ -1,8 +1,17 @@
 SmalltalkCISpec {
   #loading : [
     SCIMetacelloLoadSpec {
+      #platforms : [
+        #pharo
+      ],
       #baseline : 'RoelTyper',
-      #directory : 'src'
+      #directory : 'src',
+      #load : [ 'Tests' ]
     }
-  ]
+  ],
+  #testing : {
+    #packages : [
+      'RoelTyper*'
+    ]
+  }
 }

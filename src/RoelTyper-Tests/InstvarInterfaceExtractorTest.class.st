@@ -370,31 +370,31 @@ InstvarInterfaceExtractorTest >> testInlinedBlocks [
 		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block2->t8') interface
-		includesAll: { #asString }.
+		hasSameElements: { #asString }.
 	self
 		assertCollection: (results at: #'_block4->t9') assignments
 		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t9') interface
-		includesAll: { #, }.
+		hasSameElements: { #, }.
 	self
 		assertCollection: (results at: #'_block4->t10') assignments
 		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t10') interface
-		includesAll: {  }.
+		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t11') assignments
 		hasSameElements: { Character }.
 	self
 		assertCollection: (results at: #'_block4->t11') interface
-		includesAll: {  }.
+		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t12') assignments
 		hasSameElements: { ByteSymbol }.
 	self
 		assertCollection: (results at: #'_block4->t12') interface
-		includesAll: {  }
+		hasSameElements: {  }
 ]
 
 { #category : 'tests - assignments' }

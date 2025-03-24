@@ -67,13 +67,13 @@ PharoEncoderV3InstvarInterfaceExtractorTest >> testInlinedBlocks [
 		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t10') interface
-		includesAll: {  }.
+		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t11') interface
-		includesAll: {  }.
+		hasSameElements: {  }.
 	self
 		assertCollection: (results at: #'_block4->t12') interface
-		includesAll: {  }
+		hasSameElements: {  }
 ]
 
 { #category : 'tests - message sends' }
