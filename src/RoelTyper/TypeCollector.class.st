@@ -140,37 +140,47 @@ TypeCollector >> addAssignment: val toReturnOf: aSelector [
 ]
 
 { #category : 'adding' }
-TypeCollector >> addAssignment: value toTmp: index [ 
-	((localTypingResults at: currentExtractedMethod) at: index + 1) addAssignment: value
+TypeCollector >> addAssignment: value toTmp: index [
+
+	^ self addAssignment: value toTmp: index in: currentExtractedMethod
 ]
 
 { #category : 'adding' }
 TypeCollector >> addAssignment: value toTmp: index in: aCompiledMethod [
-	((localTypingResults at: aCompiledMethod) at: index + 1) addAssignment: value
+
+	(self localTypingResultOf: aCompiledMethod index: index)
+		addAssignment: value
 ]
 
 { #category : 'adding' }
-TypeCollector >> addAssignmentForReturn: val [ 
+TypeCollector >> addAssignmentForReturn: val [
+
 	| eT |
 	eT := self extractedTypeForReturnInMethod: currentExtractedMethod.
-	val isInteger 
-		ifTrue: 
-			[ self 
+	val isInteger
+		ifTrue: [
+			self
 				withTranslatedIndex: val
-				do: [ :idx | eT addReverseLinkedExtractedType: (typingResults at: idx) ] ]
-		ifFalse: 
-			[ (val isVariableBinding and: [ val key = #temp ]) 
-				ifTrue: 
-					[ eT addReverseLinkedExtractedType: ((localTypingResults at: currentExtractedMethod) at: val value + 1) ]
-				ifFalse: 
-					[ (val isVariableBinding and: [ val key = #return ]) 
-						ifTrue: 
-							[ eT addReverseLinkedExtractedType: (self extractedTypeForReturnInMethod: theClass >> val value) ]
-						ifFalse: 
-							[  (val isVariableBinding and: [ val key = #blockArg ])
-							ifTrue: [
-							]
-						ifFalse: [(self assignmentTypeOf: val) ifNotNil: [ :result | eT addAssignment: result ] ] ] ]]
+				do: [ :idx |
+				eT addReverseLinkedExtractedType: (typingResults at: idx) ] ]
+		ifFalse: [
+			(val isVariableBinding and: [ val key = #temp ])
+				ifTrue: [
+					eT addReverseLinkedExtractedType:
+						(self
+							 localTypingResultOf: currentExtractedMethod
+							 index: val value) ]
+				ifFalse: [
+					(val isVariableBinding and: [ val key = #return ])
+						ifTrue: [
+							eT addReverseLinkedExtractedType:
+								(self extractedTypeForReturnInMethod: theClass >> val value) ]
+						ifFalse: [
+							(val isVariableBinding and: [ val key = #blockArg ])
+								ifTrue: [  ]
+								ifFalse: [
+									(self assignmentTypeOf: val) ifNotNil: [ :result |
+										eT addAssignment: result ] ] ] ] ]
 ]
 
 { #category : 'adding' }
@@ -208,9 +218,12 @@ TypeCollector >> addSend: selector to: index [
 ]
 
 { #category : 'adding' }
-TypeCollector >> addSend: selector toTmp: index [ 
+TypeCollector >> addSend: selector toTmp: index [
 	"Add a range check to filter out sends to instvars defined in superclasses, etc."
-	((localTypingResults at: currentExtractedMethod ) at: index + 1) addSend: selector
+
+	self haltIf: [ currentExtractedMethod = #runOnDAPackageRelationGraph: ].
+	(self localTypingResultOf: currentExtractedMethod index: index)
+		addSend: selector
 ]
 
 { #category : 'accessing' }
@@ -271,86 +284,72 @@ TypeCollector >> extractedTypeForReturnInMethod: aCompiledMethod [
 ]
 
 { #category : 'heuristics' }
-TypeCollector >> handleAssignment: val for: index [ 
-	val isInteger 
-		ifTrue: 
-			[ self 
-				withTranslatedIndex: val
-				do: 
-					[ :idx | 
-					(typingResults at: index + 1) addReverseLinkedExtractedType: (typingResults at: idx) ] ]
-		ifFalse: 
-			[ (val isVariableBinding and: [ val key = #temp ]) 
-				ifTrue: 
-					[ (typingResults at: index + 1) addReverseLinkedExtractedType: ((localTypingResults at: currentExtractedMethod) at: val value + 1) ]
-				ifFalse: 
-					[ (val isVariableBinding and: [ val key = #return ]) 
-						ifTrue: 
-							[ (typingResults at: index + 1) addReverseLinkedExtractedType: (self extractedTypeForReturnInMethod: theClass >> val value) ]
-						ifFalse: 
-							[ (val isVariableBinding and: [ val key = #blockArg ]) 
-							ifFalse: [(self assignmentTypeOf: val) ifNotNil: 
-								[ :result | 
-								self 
-									addAssignment: result
-									to: index ] ] ] ]]
+TypeCollector >> handleAssignment: val for: index [
+
+	val isInteger
+		ifTrue: [
+			self withTranslatedIndex: val do: [ :idx |
+				(typingResults at: index + 1) addReverseLinkedExtractedType:
+					(typingResults at: idx) ] ]
+		ifFalse: [
+			(val isVariableBinding and: [ val key = #temp ])
+				ifTrue: [
+					(typingResults at: index + 1) addReverseLinkedExtractedType:
+						(self
+							 localTypingResultOf: currentExtractedMethod
+							 index: val value) ]
+				ifFalse: [
+					(val isVariableBinding and: [ val key = #return ])
+						ifTrue: [
+							(typingResults at: index + 1) addReverseLinkedExtractedType:
+								(self extractedTypeForReturnInMethod: theClass >> val value) ]
+						ifFalse: [
+							(val isVariableBinding and: [ val key = #blockArg ]) ifFalse: [
+								(self assignmentTypeOf: val) ifNotNil: [ :result |
+									self addAssignment: result to: index ] ] ] ] ]
 ]
 
 { #category : 'heuristics' }
 TypeCollector >> handleAssignment: val forTmp: index [
 
-	val isInteger
-		ifTrue: [
-			self withTranslatedIndex: val do: [ :idx |
-				((localTypingResults at: currentExtractedMethod) at: index + 1)
-					addReverseLinkedExtractedType: (typingResults at: idx) ] ]
-		ifFalse: [
-			(val isVariableBinding and: [ val key = #temp ])
-				ifTrue: [
-					((localTypingResults at: currentExtractedMethod) at: index + 1)
-						addReverseLinkedExtractedType:
-						((localTypingResults at: currentExtractedMethod) at:
-							 val value + 1) ]
-				ifFalse: [
-					(val isVariableBinding and: [ val key = #return ])
-						ifTrue: [
-							((localTypingResults at: currentExtractedMethod) at: index + 1)
-								addReverseLinkedExtractedType:
-								(self extractedTypeForReturnInMethod: theClass >> val value) ]
-						ifFalse: [
-							(val isVariableBinding and: [ val key = #blockArg ]) ifFalse: [
-								(self assignmentTypeOf: val) ifNotNil: [ :result |
-									self addAssignment: result toTmp: index ] ] ] ] ]
+	^ self handleAssignment: val forTmp: index in: currentExtractedMethod
 ]
 
 { #category : 'heuristics' }
 TypeCollector >> handleAssignment: val forTmp: index in: aCompiledMethod [
 	"Cannot use ifNotNil: with argument in Squeak, so use a temporary instead."
-	val isInteger 
-		ifTrue: 
-			[ self 
-				withTranslatedIndex: val
-				do: 
-					[ :idx | 
-					((localTypingResults at: aCompiledMethod) at: index + 1) addReverseLinkedExtractedType: (typingResults at: idx).
-					 ] ]
-		ifFalse: 
-			[ (val isVariableBinding and: [ val key = #temp ]) 
-				ifTrue: 
-					[ ((localTypingResults at: aCompiledMethod ) at: index + 1) addReverseLinkedExtractedType: ((localTypingResults at: currentExtractedMethod) at: val value + 1).
-					 ]
-				ifFalse: 
-					[ (val isVariableBinding and: [ val key = #return ]) 
-						ifTrue: 
-							[ ((localTypingResults at: aCompiledMethod ) at: index + 1) addReverseLinkedExtractedType: (self extractedTypeForReturnInMethod: theClass >> val value) ]
+
+	val isInteger
+		ifTrue: [
+			self withTranslatedIndex: val do: [ :idx |
+				(self localTypingResultOf: aCompiledMethod index: index)
+					addReverseLinkedExtractedType: (typingResults at: idx) ] ]
+		ifFalse: [
+			(val isVariableBinding and: [ val key = #temp ])
+				ifTrue: [
+					(self localTypingResultOf: aCompiledMethod index: index)
+						addReverseLinkedExtractedType:
+						(self
+							 localTypingResultOf: currentExtractedMethod
+							 index: val value) ]
+				ifFalse: [
+					(val isVariableBinding and: [ val key = #return ])
+						ifTrue: [
+							(self localTypingResultOf: aCompiledMethod index: index)
+								addReverseLinkedExtractedType:
+								(self extractedTypeForReturnInMethod: theClass >> val value) ]
 						ifFalse: [
-							 (val isVariableBinding and: [ val key = #blockArg ]) 
-							ifFalse: [(self assignmentTypeOf: val) ifNotNil: 
-						[ :result | 
-						self 
-							addAssignment: result
-							toTmp: index
-							in: aCompiledMethod ] ] ]]]
+							(val isVariableBinding and: [ val key = #blockArg ]) ifFalse: [
+								(self assignmentTypeOf: val) ifNotNil: [ :result |
+									self addAssignment: result toTmp: index in: aCompiledMethod ] ] ] ] ]
+]
+
+{ #category : 'private' }
+TypeCollector >> indexInListForMethod: aCompiledMethod index: index [
+
+	index < 0 ifTrue: [
+		^ aCompiledMethod ast scope tempVarNames size - index ].
+	^ index + 1
 ]
 
 { #category : 'heuristics' }
@@ -359,21 +358,10 @@ TypeCollector >> languageSpecificPushSendOf: selector to: rec args: args [
 ]
 
 { #category : 'private' }
-TypeCollector >> lastAssignmentForIndex: anIndex [
-	| assignments |
-	assignments := (self typingResults at: anIndex) assignments.
-	^assignments isEmpty
-		ifTrue: [nil]
-		ifFalse: [assignments last]
-]
+TypeCollector >> localTypingResultOf: aMethod index: index [
 
-{ #category : 'private' }
-TypeCollector >> lastAssignmentForTmpIndex: anIndex [ 
-	| assignments |
-	assignments := ((localTypingResults at: currentExtractedMethod) at: anIndex) assignments.
-	^ assignments isEmpty 
-		ifTrue: [ nil ]
-		ifFalse: [ assignments last ]
+	^ (localTypingResults at: aMethod) at:
+		  (self indexInListForMethod: aMethod index: index)
 ]
 
 { #category : 'private' }
@@ -391,7 +379,7 @@ TypeCollector >> onClass: aClass [
 	typingResults := (instVars collect: [ :ivar |
 		                  ExtractedType forInstvar: ivar inClass: aClass ])
 		                 asArray.
-	localTypingResults := IdentityDictionary new.
+	localTypingResults := Dictionary new.
 	theClass selectorsAndMethodsDo: [ :sel :cm |
 		self addLocalTypingResultsFor: cm ]
 ]
@@ -422,7 +410,6 @@ TypeCollector >> packagedResultsForCompiledMethod: aCompiledMethod [
 	arr := localTypingResults at: aCompiledMethod.
 
 	i := 0.
-
 	aCompiledMethod sourceNode allOwnTempNamesByOwners withIndexDo: [
 		:ownerWithListOfVarNames
 		:methodOrBlockIndex |
@@ -491,23 +478,29 @@ TypeCollector >> theClass [
 ]
 
 { #category : 'adding' }
-TypeCollector >> transformAsBlockArg: anExtractedTypeForTmp [ 
-	(localTypingResults at: anExtractedTypeForTmp compiledMethod) 
+TypeCollector >> transformAsBlockArg: anExtractedTypeForTmp [
+
+	(localTypingResults at: anExtractedTypeForTmp compiledMethod)
 		at: anExtractedTypeForTmp tempOffset
-		put: (ExtractedTypeForBlockArg 
-				forOffset: anExtractedTypeForTmp tempOffset
-				ofCompiledMethod: anExtractedTypeForTmp compiledMethod
-				inClass: anExtractedTypeForTmp ivarClass)
+		put: (ExtractedTypeForBlockArg
+				 forOffset: anExtractedTypeForTmp tempOffset
+				 ofCompiledMethod: anExtractedTypeForTmp compiledMethod
+				 inClass: anExtractedTypeForTmp ivarClass)
 ]
 
 { #category : 'adding' }
-TypeCollector >> transformAsBlockArgTheTmpOffset: offset [ 
-	((localTypingResults at: currentExtractedMethod ) at: (offset + 1)) asBlockArgInTypeCollector: self
+TypeCollector >> transformAsBlockArgTheTmpOffset: offset [
+
+	^ self
+		  transformAsBlockArgTheTmpOffset: offset
+		  in: currentExtractedMethod
 ]
 
 { #category : 'adding' }
-TypeCollector >> transformAsBlockArgTheTmpOffset: offset in: aCompiledMethod [ 
-	((localTypingResults at: aCompiledMethod ) at: (offset + 1)) asBlockArgInTypeCollector: self
+TypeCollector >> transformAsBlockArgTheTmpOffset: offset in: aCompiledMethod [
+
+	(self localTypingResultOf: aCompiledMethod index: offset)
+		asBlockArgInTypeCollector: self
 ]
 
 { #category : 'private' }

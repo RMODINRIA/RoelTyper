@@ -9,18 +9,18 @@ Class {
 	#tag : 'Pharo'
 }
 
-{ #category : 'instruction decoding' }
+{ #category : 'blocks' }
 PharoEncoderV3InstvarInterfaceExtractor >> blockMappingNotFoundFor: offset [
 
 	^ #blockTemp -> (offset - self blockMapping size)
 ]
 
-{ #category : 'block' }
+{ #category : 'blocks' }
 PharoEncoderV3InstvarInterfaceExtractor >> blocksArgsBySize [
 	^ blocksLimits ifNil: [ blocksLimits := OrderedCollection new ]
 ]
 
-{ #category : 'block' }
+{ #category : 'blocks' }
 PharoEncoderV3InstvarInterfaceExtractor >> blocksDecrement [
 
 	blocksLimits := blocksLimits select: [ :e |

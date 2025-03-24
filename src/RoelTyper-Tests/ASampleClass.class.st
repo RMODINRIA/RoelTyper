@@ -50,6 +50,30 @@ ASampleClass >> c [
 	c := b
 ]
 
+{ #category : 'blocks typing' }
+ASampleClass >> inlinedBlocks [
+
+	| t1 t2 t3 |
+	t1 := 1.
+	t2 ifNotNil: [ :t4 |
+		| t5 t6 |
+		t5 := 't5'.
+		t6 := 1.2.
+		t4 > 5.
+		Array new do: [ :t7 |
+			| t8 |
+			t7 asInteger.
+			t7 ifNil: [ t8 asString ].
+			Array new withIndexDo: [ :t9 :t10 |
+				| t11 t12 |
+				t11 := $1.
+				t12 := #t12.
+				t6 * t6.
+				t9 , t10 ] ] ].
+	t3 := #(  ).
+	^ Set new
+]
+
 { #category : 'temporaries typing' }
 ASampleClass >> nestedBlocksComplex: mArg [
 
@@ -83,16 +107,18 @@ ASampleClass >> nestedBlocksComplex: mArg [
 { #category : 'blocks typing' }
 ASampleClass >> nestedBlocksUsingOuterTemps [
 
-	| t1 tb1 |
-	tb1 := [
-	       | t2 tb2 |
-	       tb2 := [
-	              | t3 |
-	              t3 := 1.
-	              t1 := 1.0.
-	              t2 := '2' ].
-	       tb2 value ].
-	tb1 value
+	| ta1 ta2 ta3 ta4 |
+	ta2 := 'ta2'.
+	ta4 := [
+	       | tb1 tb2 tb3 tb4 |
+	       tb4 := Date today.
+	       tb1 := [
+	              | tc1 |
+	              tc1 := 1.
+	              ta3 := 1.0.
+	              tb3 := $2 ].
+	       tb1 value ].
+	ta4 value
 ]
 
 { #category : 'blocks typing' }

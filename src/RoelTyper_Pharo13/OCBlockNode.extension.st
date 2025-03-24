@@ -1,7 +1,7 @@
-Extension { #name : 'ASTBlockNode' }
+Extension { #name : 'OCBlockNode' }
 
 { #category : '*RoelTyper_Pharo13' }
-ASTBlockNode >> ownTempNames [
+OCBlockNode >> ownTempNames [
 
 	^ PharoTypeCollector ownTempNamesForBlockNode: self
 ]

@@ -2,7 +2,8 @@ Class {
 	#name : 'PharoEncoderSistaV1InstvarInterfaceExtractor',
 	#superclass : 'PharoAbstractInstvarInterfaceExtractor',
 	#instVars : [
-		'tempVarAmount'
+		'tempVarAmount',
+		'preparedVectorSize'
 	],
 	#category : 'RoelTyper-Pharo',
 	#package : 'RoelTyper',
@@ -13,19 +14,44 @@ Class {
 PharoEncoderSistaV1InstvarInterfaceExtractor >> extractInterfacesFrom: m addTo: aTypeCollector [
 
 	tempVarAmount := m numTemps.
+	preparedVectorSize := 0.
 	^ super extractInterfacesFrom: m addTo: aTypeCollector
+]
+
+{ #category : 'instruction decoding' }
+PharoEncoderSistaV1InstvarInterfaceExtractor >> indexOfVectorTemp: remoteTempIndex inVectorAt: tempVectorIndex [
+
+	| methodLevelOffset |
+	methodLevelOffset := self tempOffsetFrom: tempVectorIndex.
+	^ methodLevelOffset + remoteTempIndex
+]
+
+{ #category : 'instruction decoding' }
+PharoEncoderSistaV1InstvarInterfaceExtractor >> methodReturnTop [
+	"Return Top Of Stack bytecode."
+
+	collector addAssignmentForReturn: self pop
 ]
 
 { #category : 'instruction decoding' }
 PharoEncoderSistaV1InstvarInterfaceExtractor >> popIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	"Remove Top Of Stack And Store Into Offset of Temp Vector bytecode."
 
-	| methodLevelOffset rvalue |
-	rvalue := super
-		          popIntoRemoteTemp: remoteTempIndex
-		          inVectorAt: tempVectorIndex.
-	methodLevelOffset := self tempOffsetFrom: tempVectorIndex.
-	collector handleAssignment: rvalue forTmp: methodLevelOffset
+	| rvalue |
+	rvalue := stack removeLast.
+	collector
+		handleAssignment: rvalue
+		forTmp:
+		(self indexOfVectorTemp: remoteTempIndex inVectorAt: tempVectorIndex)
+]
+
+{ #category : 'instruction decoding' }
+PharoEncoderSistaV1InstvarInterfaceExtractor >> popIntoTemporaryVariable: offset [
+
+	preparedVectorSize isZero ifFalse: [
+		preparedVectorSize := 0.
+		^ self ].
+	^ super popIntoTemporaryVariable: offset
 ]
 
 { #category : 'instruction decoding' }
@@ -54,13 +80,27 @@ PharoEncoderSistaV1InstvarInterfaceExtractor >> pushFullClosure: compiledBlock n
 ]
 
 { #category : 'instruction decoding' }
+PharoEncoderSistaV1InstvarInterfaceExtractor >> pushNewArrayOfSize: aSize [
+
+	preparedVectorSize := aSize
+]
+
+{ #category : 'instruction decoding' }
+PharoEncoderSistaV1InstvarInterfaceExtractor >> pushRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
+
+	stack add: #temp -> (self indexOfVectorTemp: remoteTempIndex inVectorAt: tempVectorIndex)
+]
+
+{ #category : 'instruction decoding' }
 PharoEncoderSistaV1InstvarInterfaceExtractor >> storeIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
 	"Pharo 9+
 	 Store Top Of Stack And Store Into Offset of Temp Vector bytecode."
 
-	| methodLevelOffset rvalue |
-	methodLevelOffset := self tempOffsetFrom: tempVectorIndex.
+	| rvalue |
 	rvalue := stack removeLast.
-	collector handleAssignment: rvalue forTmp: methodLevelOffset.
+	collector
+		handleAssignment: rvalue
+		forTmp:
+		(self indexOfVectorTemp: remoteTempIndex inVectorAt: tempVectorIndex).
 	stack add: rvalue
 ]

@@ -1,21 +1,27 @@
-Extension { #name : 'RBMethodNode' }
+Extension { #name : 'OCMethodNode' }
 
-{ #category : '*RoelTyper' }
-RBMethodNode >> allOwnTempNames [
+{ #category : '*RoelTyper_Pharo13' }
+OCMethodNode >> allOwnTempNames [
 
 	^ self allOwnTempNamesByOwners flattened
 ]
 
-{ #category : '*RoelTyper' }
-RBMethodNode >> allOwnTempNamesByOwners [
+{ #category : '*RoelTyper_Pharo13' }
+OCMethodNode >> allOwnTempNamesByOwners [
 
 	^ ({ (self -> self ownTempNames) }
 	   , (self blockNodes collect: [ :each | each -> each ownTempNames ]))
 		  asOrderedDictionary
 ]
 
-{ #category : '*RoelTyper' }
-RBMethodNode >> ownTempNames [
+{ #category : '*RoelTyper_Pharo13' }
+OCMethodNode >> generateMethodByCompiler: aCompiler [
+
+	^ self generateMethod
+]
+
+{ #category : '*RoelTyper_Pharo13' }
+OCMethodNode >> ownTempNames [
 
 	| tempNames |
 	tempNames := self scope tempVarNames asOrderedCollection.
